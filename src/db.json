@@ -1,0 +1,169 @@
+{
+    "chatbots": [
+        {
+            "id": 1,
+            "name": "Customer Support Bot",
+            "description": "Handles customer inquiries and support tickets",
+            "status": "active",
+            "type": "support",
+            "created": "2023-05-01",
+            "interactions": 5000,
+            "satisfactionRate": 92,
+            "responseTime": 2.5,
+            "languages": [
+                "English",
+                "Spanish"
+            ],
+            "documentIds": [
+                1,
+                3
+            ],
+            "performanceData": [
+                {
+                    "date": "2023-05-01",
+                    "interactions": 150,
+                    "satisfaction": 90
+                },
+                {
+                    "date": "2023-05-02",
+                    "interactions": 180,
+                    "satisfaction": 92
+                },
+                {
+                    "date": "2023-05-03",
+                    "interactions": 210,
+                    "satisfaction": 91
+                },
+                {
+                    "date": "2023-05-04",
+                    "interactions": 160,
+                    "satisfaction": 93
+                },
+                {
+                    "date": "2023-05-05",
+                    "interactions": 190,
+                    "satisfaction": 94
+                }
+            ],
+            "topQueries": [
+                {
+                    "query": "How to reset password",
+                    "count": 120
+                },
+                {
+                    "query": "Refund policy",
+                    "count": 95
+                },
+                {
+                    "query": "Shipping information",
+                    "count": 80
+                },
+                {
+                    "query": "Product availability",
+                    "count": 65
+                },
+                {
+                    "query": "Order status",
+                    "count": 50
+                }
+            ],
+            "languageUsage": [
+                {
+                    "language": "English",
+                    "percentage": 70
+                },
+                {
+                    "language": "Spanish",
+                    "percentage": 30
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "name": "Sales Assistant",
+            "description": "Helps customers with product information and purchases",
+            "status": "inactive",
+            "type": "sales",
+            "created": "2023-04-15",
+            "interactions": 3500,
+            "satisfactionRate": 88,
+            "responseTime": 3.2,
+            "languages": [
+                "English"
+            ],
+            "documentIds": [
+                2
+            ],
+            "performanceData": [
+                {
+                    "date": "2023-05-01",
+                    "interactions": 100,
+                    "satisfaction": 87
+                },
+                {
+                    "date": "2023-05-02",
+                    "interactions": 120,
+                    "satisfaction": 89
+                },
+                {
+                    "date": "2023-05-03",
+                    "interactions": 110,
+                    "satisfaction": 88
+                },
+                {
+                    "date": "2023-05-04",
+                    "interactions": 130,
+                    "satisfaction": 90
+                },
+                {
+                    "date": "2023-05-05",
+                    "interactions": 140,
+                    "satisfaction": 91
+                }
+            ],
+            "topQueries": [
+                {
+                    "query": "Product pricing",
+                    "count": 85
+                },
+                {
+                    "query": "Product comparison",
+                    "count": 70
+                },
+                {
+                    "query": "Discount availability",
+                    "count": 60
+                }
+            ],
+            "languageUsage": [
+                {
+                    "language": "English",
+                    "percentage": 100
+                }
+            ]
+        }
+    ],
+    "documents": [
+        {
+            "id": 1,
+            "name": "Product Manual.pdf",
+            "size": "2.5 MB",
+            "uploadDate": "2023-05-10",
+            "chatbotId": 1
+        },
+        {
+            "id": 2,
+            "name": "FAQ.docx",
+            "size": "1.2 MB",
+            "uploadDate": "2023-05-09",
+            "chatbotId": 2
+        },
+        {
+            "id": 3,
+            "name": "Terms and Conditions.pdf",
+            "size": "500 KB",
+            "uploadDate": "2023-05-08",
+            "chatbotId": 1
+        }
+    ]
+}
