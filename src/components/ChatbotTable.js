@@ -10,7 +10,7 @@ const ChatbotTable = ({ chatbots, loading, onEdit, onDelete, onShowDetails }) =>
       key: 'name',
       render: (text, record) => (
         <Space>
-          <a onClick={() => onShowDetails(record)}>{text}</a>
+          <Button type="link" onClick={() => onShowDetails(record)}>{text}</Button>
           <Tag color={record.status === 'active' ? 'green' : 'red'}>
             {record.status.toUpperCase()}
           </Tag>

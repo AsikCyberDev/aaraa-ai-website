@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Card, Avatar, Typography, Row, Col, Statistic, Button, Modal, Form, Input, Progress, Tag, Descriptions, Table, Tabs, List, Timeline } from 'antd';
-import { UserOutlined, EditOutlined, CrownOutlined, RobotOutlined, BarChartOutlined, HistoryOutlined, KeyOutlined, BellOutlined } from '@ant-design/icons';
+import { BarChartOutlined, BellOutlined, CrownOutlined, EditOutlined, HistoryOutlined, KeyOutlined, RobotOutlined, UserOutlined } from '@ant-design/icons';
+import { Avatar, Button, Card, Col, Descriptions, Form, Input, List, Modal, Progress, Row, Statistic, Table, Tabs, Tag, Timeline, Typography } from 'antd';
+import React, { useEffect, useState } from 'react';
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Text } = Typography;
 const { TabPane } = Tabs;
 
 function Profile() {

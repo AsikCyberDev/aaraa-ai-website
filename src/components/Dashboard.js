@@ -1,12 +1,11 @@
 import {
-    BarChartOutlined,
-    RobotOutlined,
-    UploadOutlined,
-    UserOutlined,
+  BarChartOutlined,
+  RobotOutlined,
+  UploadOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
 import { Layout, Menu } from 'antd';
 import React, { useState } from 'react';
-import DocumentUpload from './DocumentUpload';
 import MyChatbots from './MyChatbots';
 import Profile from './Profile';
 import UploadDocuments from './UploadDocuments';

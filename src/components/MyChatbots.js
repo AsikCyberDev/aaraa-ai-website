@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { Card, Button, Modal, Form, Input, Select, Space, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import { Button, Card, Form, Input, Modal, Select, Space, message } from 'antd';
 import { motion } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { createChatbot, deleteChatbot, fetchChatbots, fetchDocuments, updateChatbot } from '../api';
+import ChatbotDetailsDrawer from './ChatbotDetailsDrawer';
 import ChatbotOverview from './ChatbotOverview';
 import ChatbotTable from './ChatbotTable';
-import ChatbotDetailsDrawer from './ChatbotDetailsDrawer';
-import { fetchChatbots, fetchDocuments, createChatbot, updateChatbot, deleteChatbot } from '../api';
 
 const { Option } = Select;
 
@@ -26,12 +26,14 @@ function MyChatbots() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [chatbotsResponse, documentsResponse] = await Promise.all([
-        fetchChatbots(),
-        fetchDocuments()
-      ]);
-      setChatbots(chatbotsResponse.data);
-      setDocuments(documentsResponse.data);
+      const chatbotsResponse = await fetchChatbots();
+      const documentsResponse = await Promise.all(
+        chatbotsResponse.data.getChatbots.flatMap(chatbot =>
+          chatbot.documentIds.map(docId => fetchDocuments(docId))
+        )
+      );
+      setChatbots(chatbotsResponse.data.getChatbots);
+      setDocuments(documentsResponse.map(response => response.data.getDocument));
     } catch (error) {
       message.error('Failed to fetch data');
     }
