@@ -186,9 +186,30 @@ const ChatbotLogin = ({ onLogin }) => {
           }}>
             {isLogin ? (
               currentField === 'password' ? (
-                <LockOutlined style={{ marginRight: '8px', color: 'rgba(0, 0, 0, 0.3)' }} />
+                <Input
+                  type="password"
+                  placeholder="Enter your password"
+                  prefix={<LockOutlined style={{ marginRight: '8px', color: 'rgba(0, 0, 0, 0.3)' }} />}
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      onInputSubmit();
+                    }
+                  }}
+                />
               ) : (
-                <UserOutlined style={{ marginRight: '8px', color: 'rgba(0, 0, 0, 0.3)' }} />
+                <Input
+                  placeholder="Enter your username"
+                  prefix={<UserOutlined style={{ marginRight: '8px', color: 'rgba(0, 0, 0, 0.3)' }} />}
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      onInputSubmit();
+                    }
+                  }}
+                />
               )
             ) : (
               currentField === 'sex' ? (
