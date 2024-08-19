@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { Layout } from 'antd';
-import Login from './components/Login';
-import Dashboard from './components/Dashboard';
-import 'antd/dist/reset.css';
-import './styles.css';
 
-const { Content } = Layout;
+import 'devextreme/dist/css/dx.light.css';
+import React, { useState } from 'react';
+import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import Dashboard from './components/Dashboard';
+import Login from './components/Login';
+import './styles.css';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -18,16 +17,14 @@ function App() {
   return (
     <Router>
       <Layout className="layout">
-        <Content style={{ padding: '50px', minHeight: '100vh' }}>
-          <Routes>
-            <Route path="/" element={
-              isAuthenticated ? <Navigate to="/dashboard" /> : <Login onLogin={handleLogin} />
-            } />
-            <Route path="/dashboard" element={
-              isAuthenticated ? <Dashboard /> : <Navigate to="/" />
-            } />
-          </Routes>
-        </Content>
+        <Routes>
+          <Route path="/login" element={
+            isAuthenticated ? <Navigate to="/dashboard" /> : <Login onLogin={handleLogin} />
+          } />
+          <Route path="/*" element={
+            isAuthenticated ? <Dashboard /> : <Navigate to="/login" />
+          } />
+        </Routes>
       </Layout>
     </Router>
   );

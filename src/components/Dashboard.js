@@ -1,87 +1,35 @@
-import {
-  BarChartOutlined,
-  RobotOutlined,
-  UploadOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
-import { Layout, Menu } from 'antd';
 import React, { useState } from 'react';
-import MyChatbots from './MyChatbots';
+import { Layout } from 'antd';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import Navbar from './Navbar';
 import Profile from './Profile';
+import MyChatbots from './MyChatbots';
 import UploadDocuments from './UploadDocuments';
+import Analytics from './Analytics';
 
-
-const { Header, Content, Sider } = Layout;
+const { Content } = Layout;
 
 function Dashboard() {
-  const [selectedKey, setSelectedKey] = useState('1');
+  const [collapsed, setCollapsed] = useState(false);
 
-  const renderContent = () => {
-    switch (selectedKey) {
-      case '1':
-        return <Profile />;
-      case '2':
-        return <MyChatbots />;
-      case '3':
-  return <UploadDocuments />;
-      case '4':
-        return <h2>Analytics (Coming Soon)</h2>;
-      default:
-        return <Profile />;
-    }
+  const onCollapse = () => {
+    setCollapsed(!collapsed);
   };
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Header className="header" style={{ position: 'fixed', zIndex: 1, width: '100%' }}>
-        <div className="logo" />
-        <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['1']}>
-          <Menu.Item key="1">Dashboard</Menu.Item>
-          <Menu.Item key="2">Chatbots</Menu.Item>
-          <Menu.Item key="3">Analytics</Menu.Item>
-        </Menu>
-      </Header>
-      <Layout style={{ marginTop: 64 }}>
-        <Sider width={200} className="site-layout-background" style={{
-          overflow: 'auto',
-          height: '100vh',
-          position: 'fixed',
-          left: 0,
-        }}>
-          <Menu
-            mode="inline"
-            defaultSelectedKeys={['1']}
-            style={{ height: '100%', borderRight: 0 }}
-            onSelect={({ key }) => setSelectedKey(key)}
-          >
-            <Menu.Item key="1" icon={<UserOutlined />}>
-              Profile
-            </Menu.Item>
-            <Menu.Item key="2" icon={<RobotOutlined />}>
-              My Chatbots
-            </Menu.Item>
-            <Menu.Item key="3" icon={<UploadOutlined />}>
-              Upload Documents
-            </Menu.Item>
-            <Menu.Item key="4" icon={<BarChartOutlined />}>
-              Analytics
-            </Menu.Item>
-          </Menu>
-        </Sider>
-        <Layout style={{ padding: '0 24px 24px', marginLeft: 200 }}>
-          <Content
-            className="site-layout-background"
-            style={{
-              padding: 24,
-              margin: 0,
-              minHeight: 280,
-              overflow: 'initial'
-            }}
-          >
-            {renderContent()}
-          </Content>
-        </Layout>
-      </Layout>
+    <Layout className="dashboard-layout">
+      <Navbar onCollapse={onCollapse} collapsed={collapsed} />
+      <Content className="site-content">
+        <Routes>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard" element={<Profile />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/chatbots" element={<MyChatbots />} />
+          <Route path="/upload" element={<UploadDocuments />} />
+          <Route path="/analytics" element={<Analytics />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </Content>
     </Layout>
   );
 }

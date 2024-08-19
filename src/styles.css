@@ -9,3 +9,107 @@
 .site-layout-background {
   background: #fff;
 }
+
+/* Dashboard and Navbar Styles */
+.dashboard-layout {
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+}
+
+.logo {
+  width: 120px;
+  height: 31px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 16px 24px 16px 0;
+  float: left;
+}
+
+.ant-menu {
+  flex: 1;
+}
+
+.user-menu {
+  float: right;
+}
+
+.ant-dropdown-link {
+  color: #fff;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.ant-dropdown-link span {
+  margin-left: 8px;
+}
+
+.site-content {
+  padding: 24px;
+  margin-top: 64px;
+  min-height: calc(100vh - 64px);
+  background-color: #fff;
+}
+
+/* Override any conflicting styles */
+.App {
+  text-align: left;
+}
+
+.ant-layout {
+  background: #f0f2f5;
+}
+
+/* Analytics Styles */
+.analytics-container {
+  padding: 24px;
+}
+
+.analytics-container .ant-card {
+  height: 100%;
+}
+
+.analytics-container .ant-statistic-title {
+  font-size: 14px;
+}
+
+.analytics-container .ant-statistic-content {
+  font-size: 24px;
+}
+
+.analytics-container .recharts-wrapper {
+  margin: 0 auto;
+}
+
+/* MyChatbots Styles */
+.my-chatbots-container {
+  padding: 24px;
+}
+
+.my-chatbots-container .ant-card {
+  margin-bottom: 16px;
+}
+
+.my-chatbots-container .ant-steps {
+  margin-bottom: 24px;
+}
+
+.my-chatbots-container .ant-form-item {
+  margin-bottom: 24px;
+}
+
+.my-chatbots-container .ant-checkbox-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.my-chatbots-container .ant-checkbox-group .ant-card {
+  margin-bottom: 16px;
+}
