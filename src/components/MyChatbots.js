@@ -26,91 +26,139 @@ import {
   Switch,
   Table, Tag, Typography,
   Upload,
-  message
+  message,
+  Tooltip
 } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { FaDiscord } from 'react-icons/fa';
-const { useForm } = Form;
 
 
 const { Step } = Steps;
 const { Option } = Select;
-const { Title, Text } = Typography;
+const { Title } = Typography;
 const { TextArea } = Input;
 
+const formItemLayout = {
+  labelCol: { span: 6 },
+  wrapperCol: { span: 18 },
+};
+
+const sampleChatbot = {
+  id: "9de8c05f-6e7f-4f65-a589-3c6df4053a91",
+  name: "Sample Chatbotter",
+  description: "This is a sample chatbot",
+  status: "ACTIVE",
+  type: "SUPPORT",
+  language: "en",
+  integrations: ["Website"],
+  customIntegration: "Custom Integration",
+  theme: "dark",
+  primaryColor: "#912F31",
+  fontSelection: "Arial",
+  chatIcon: "test.png",
+  welcomeMessage: "Welcome to our support chatbot!",
+  fallbackMessage: "Sorry, I didn't understand that. Can you please rephrase?",
+  inputPlaceholder: "Type your message here...",
+  responseTime: 1,
+  enableTypingIndicator: true,
+  trainingData: "selected.csv",
+  knowledgeBase: "Sample knowledge base content",
+  enableLearning: true,
+  confidenceThreshold: 0.2,
+  maxConversationLength: 10,
+  enableHumanHandoff: true,
+  handoffThreshold: 0.1,
+  enableAnalytics: true,
+  sessionTimeout: 5,
+  created: "2024-08-19T09:31:50.098Z",
+  interactions: 0,
+  satisfactionRate: 0
+};
+
 const MyChatbots = () => {
+  const [form] = Form.useForm();
   const [chatbots, setChatbots] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
-const [form] = useForm();
+  const [formData, setFormData] = useState({});
 
 
   useEffect(() => {
-    fetchChatbots();
+    const savedChatbots = localStorage.getItem('chatbots');
+    if (savedChatbots) {
+      setChatbots([sampleChatbot, ...JSON.parse(savedChatbots)]);
+    }
   }, []);
-
-  useEffect(() => {
-  form.resetFields();
-}, [isModalVisible, form]);
-
-  const fetchChatbots = () => {
-    setChatbots([
-      { id: 1, name: 'Support Bot', type: 'Customer Support', integrations: ['Website', 'WhatsApp'], status: 'Active' },
-      { id: 2, name: 'Sales Bot', type: 'Sales', integrations: ['Website', 'Slack'], status: 'Inactive' },
-    ]);
-  };
 
   const showModal = () => {
     setIsModalVisible(true);
     setCurrentStep(0);
-    form.resetFields();
+    setFormData({});
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
-    form.resetFields();
     setCurrentStep(0);
+    setFormData({});
   };
 
-  const handleStepChange = (current) => {
-    form.validateFields().then(() => {
-      setCurrentStep(current);
-    }).catch(() => {
-      // If validation fails, don't change the step
-    });
+  const handleInputChange = (name, value) => {
+    setFormData(prevData => ({ ...prevData, [name]: value }));
   };
 
-  const normFile = (e) => {
-    if (Array.isArray(e)) {
-      return e;
+  const handleCreateChatbot = () => {
+    console.log("Form data:", formData);
+    if (Object.keys(formData).length === 0) {
+      message.error('Please fill in the form before submitting.');
+      return;
     }
-    return e?.fileList;
-  };
-
-const handleCreateChatbot = async () => {
-  try {
-    const values = await form.validateFields();
-    console.log("Form values:", values);
 
     const newChatbot = {
-      id: chatbots.length + 1,
-      ...values,
+      id: Date.now(),
+      ...formData,
       status: 'Active',
-      integrations: values.integrations || [],
+      created: new Date().toISOString(),
+      interactions: 0,
+      satisfactionRate: 0
     };
 
-    console.log("New chatbot:", newChatbot);
-
-    setChatbots([...chatbots, newChatbot]);
+    const updatedChatbots = [...chatbots, newChatbot];
+    setChatbots(updatedChatbots);
+    localStorage.setItem('chatbots', JSON.stringify(updatedChatbots.filter(chatbot => chatbot.id !== sampleChatbot.id)));
     setIsModalVisible(false);
-    form.resetFields();
-    setCurrentStep(0);
+    setFormData({});
     message.success('Chatbot created successfully!');
-  } catch (errorInfo) {
-    console.log('Failed:', errorInfo);
-    message.error('Please fill in all required fields.');
-  }
-};
+  };
+
+
+
+
+  const renderChatbotDetails = (item) => (
+    <>
+      <div><strong>Type:</strong> {item.type}</div>
+      <div><strong>Language:</strong> {item.language}</div>
+      <div><strong>Description:</strong> {item.description}</div>
+      <div><strong>Integrations:</strong> {item.integrations.join(', ')}</div>
+      <div><strong>Theme:</strong> {item.theme}</div>
+      <div><strong>Primary Color:</strong> {item.primaryColor}</div>
+      <div><strong>Font:</strong> {item.fontSelection}</div>
+      <div><strong>Chat Icon:</strong> {item.chatIcon}</div>
+      <div><strong>Training Data:</strong> {item.trainingData}</div>
+      <div><strong>Created:</strong> {new Date(item.created).toLocaleString()}</div>
+      <div><strong>Interactions:</strong> {item.interactions}</div>
+      <div><strong>Satisfaction Rate:</strong> {item.satisfactionRate}%</div>
+    </>
+  );
+
+
+
+
+  useEffect(() => {
+    form.resetFields();
+  }, [isModalVisible, form]);
+
+
+
 
   const handleDeleteChatbot = (id) => {
     Modal.confirm({
@@ -147,11 +195,284 @@ const handleCreateChatbot = async () => {
     return String(value);
   };
 
+  const renderFormStep = (step) => {
+    switch (step.title) {
+      case 'Basic Info':
+        return (
+          <Form {...formItemLayout}>
+            <Form.Item label="Chatbot Name" required>
+              <Input
+                value={formData.name || ''}
+                onChange={(e) => handleInputChange('name', e.target.value)}
+              />
+            </Form.Item>
+            <Form.Item label="Chatbot Type" required>
+              <Select
+                value={formData.type}
+                onChange={(value) => handleInputChange('type', value)}
+              >
+                <Option value="Customer Support">Customer Support</Option>
+                <Option value="Sales">Sales</Option>
+                <Option value="FAQ">FAQ</Option>
+                <Option value="Lead Generation">Lead Generation</Option>
+                <Option value="E-commerce Assistant">E-commerce Assistant</Option>
+              </Select>
+            </Form.Item>
+            <Form.Item label="Description">
+              <TextArea
+                rows={4}
+                value={formData.description || ''}
+                onChange={(e) => handleInputChange('description', e.target.value)}
+              />
+            </Form.Item>
+            <Form.Item label="Primary Language" required>
+              <Select
+                value={formData.language}
+                onChange={(value) => handleInputChange('language', value)}
+              >
+                <Option value="en">English</Option>
+                <Option value="es">Spanish</Option>
+                <Option value="fr">French</Option>
+                <Option value="de">German</Option>
+                <Option value="zh">Chinese</Option>
+              </Select>
+            </Form.Item>
+          </Form>
+        );
+
+      case 'Integrations':
+        return (
+          <Form {...formItemLayout}>
+            <Form.Item label="Select Integrations">
+              <Checkbox.Group
+                value={formData.integrations || []}
+                onChange={(values) => handleInputChange('integrations', values)}
+              >
+                <Card style={{ marginBottom: 16 }}>
+                  <Checkbox value="Website"><GlobalOutlined /> Website (Free)</Checkbox>
+                </Card>
+                <Card style={{ marginBottom: 16 }}>
+                  <Checkbox value="WhatsApp"><WhatsAppOutlined /> WhatsApp ($20/month)</Checkbox>
+                </Card>
+                <Card style={{ marginBottom: 16 }}>
+                  <Checkbox value="Slack"><SlackOutlined /> Slack ($15/month)</Checkbox>
+                </Card>
+                <Card style={{ marginBottom: 16 }}>
+                  <Checkbox value="Discord"><FaDiscord /> Discord ($15/month)</Checkbox>
+                </Card>
+              </Checkbox.Group>
+            </Form.Item>
+            <Form.Item label="Custom Integration URL">
+              <Input
+                placeholder="https://your-api-endpoint.com"
+                value={formData.customIntegration || ''}
+                onChange={(e) => handleInputChange('customIntegration', e.target.value)}
+              />
+            </Form.Item>
+          </Form>
+        );
+
+      case 'Appearance':
+        return (
+          <Form {...formItemLayout}>
+            <Form.Item label="Chat Theme">
+              <Radio.Group
+                value={formData.theme}
+                onChange={(e) => handleInputChange('theme', e.target.value)}
+              >
+                <Radio value="light">Light</Radio>
+                <Radio value="dark">Dark</Radio>
+                <Radio value="custom">Custom</Radio>
+              </Radio.Group>
+            </Form.Item>
+            <Form.Item label="Primary Color">
+              <ColorPicker
+                value={formData.primaryColor}
+                onChange={(color) => handleInputChange('primaryColor', color.toHexString())}
+              />
+            </Form.Item>
+            <Form.Item label="Font Selection">
+              <Select
+                value={formData.fontSelection}
+                onChange={(value) => handleInputChange('fontSelection', value)}
+              >
+                <Option value="Arial">Arial</Option>
+                <Option value="Helvetica">Helvetica</Option>
+                <Option value="Times New Roman">Times New Roman</Option>
+                <Option value="Courier">Courier</Option>
+              </Select>
+            </Form.Item>
+            <Form.Item label="Chat Icon">
+              <Upload
+                listType="picture-card"
+                beforeUpload={() => false}
+                onChange={(info) => handleInputChange('chatIcon', info.fileList)}
+              >
+                <div>
+                  <UploadOutlined />
+                  <div style={{ marginTop: 8 }}>Upload</div>
+                </div>
+              </Upload>
+            </Form.Item>
+          </Form>
+        );
+
+      case 'Behavior':
+        return (
+          <Form {...formItemLayout}>
+            <Form.Item label="Welcome Message">
+              <TextArea
+                rows={4}
+                value={formData.welcomeMessage || ''}
+                onChange={(e) => handleInputChange('welcomeMessage', e.target.value)}
+              />
+            </Form.Item>
+            <Form.Item label="Fallback Message">
+              <TextArea
+                rows={4}
+                value={formData.fallbackMessage || ''}
+                onChange={(e) => handleInputChange('fallbackMessage', e.target.value)}
+              />
+            </Form.Item>
+            <Form.Item label="Input Placeholder">
+              <Input
+                value={formData.inputPlaceholder || ''}
+                onChange={(e) => handleInputChange('inputPlaceholder', e.target.value)}
+              />
+            </Form.Item>
+            <Form.Item label="Response Time">
+              <Slider
+                min={0}
+                max={5}
+                step={0.5}
+                value={formData.responseTime || 0}
+                onChange={(value) => handleInputChange('responseTime', value)}
+              />
+            </Form.Item>
+            <Form.Item label="Typing Indicator">
+              <Switch
+                checked={formData.enableTypingIndicator || false}
+                onChange={(checked) => handleInputChange('enableTypingIndicator', checked)}
+              />
+            </Form.Item>
+          </Form>
+        );
+
+      case 'Training':
+        return (
+          <Form {...formItemLayout}>
+            <Form.Item label="Training Data">
+              <Upload
+                listType="text"
+                beforeUpload={() => false}
+                onChange={(info) => handleInputChange('trainingData', info.fileList)}
+              >
+                <Button icon={<UploadOutlined />}>Select File</Button>
+              </Upload>
+            </Form.Item>
+            <Form.Item label="Knowledge Base URL">
+              <Input
+                placeholder="https://your-knowledge-base.com"
+                value={formData.knowledgeBase || ''}
+                onChange={(e) => handleInputChange('knowledgeBase', e.target.value)}
+              />
+            </Form.Item>
+            <Form.Item label="Continuous Learning">
+              <Switch
+                checked={formData.enableLearning || false}
+                onChange={(checked) => handleInputChange('enableLearning', checked)}
+              />
+            </Form.Item>
+            <Form.Item label="Confidence Threshold">
+              <Slider
+                min={0}
+                max={1}
+                step={0.1}
+                value={formData.confidenceThreshold || 0}
+                onChange={(value) => handleInputChange('confidenceThreshold', value)}
+              />
+            </Form.Item>
+          </Form>
+        );
+
+      case 'Advanced':
+        return (
+          <Form {...formItemLayout}>
+            <Form.Item label="Max Conversation Length">
+              <InputNumber
+                min={10}
+                max={100}
+                value={formData.maxConversationLength}
+                onChange={(value) => handleInputChange('maxConversationLength', value)}
+              />
+            </Form.Item>
+            <Form.Item label="Human Handoff">
+              <Switch
+                checked={formData.enableHumanHandoff || false}
+                onChange={(checked) => handleInputChange('enableHumanHandoff', checked)}
+              />
+            </Form.Item>
+            <Form.Item label="Handoff Threshold">
+              <Slider
+                min={0}
+                max={1}
+                step={0.1}
+                value={formData.handoffThreshold || 0}
+                onChange={(value) => handleInputChange('handoffThreshold', value)}
+              />
+            </Form.Item>
+            <Form.Item label="Analytics">
+              <Switch
+                checked={formData.enableAnalytics || false}
+                onChange={(checked) => handleInputChange('enableAnalytics', checked)}
+              />
+            </Form.Item>
+            <Form.Item label="Session Timeout">
+              <InputNumber
+                min={5}
+                max={60}
+                value={formData.sessionTimeout}
+                onChange={(value) => handleInputChange('sessionTimeout', value)}
+                addonAfter="minutes"
+              />
+            </Form.Item>
+          </Form>
+        );
+
+      case 'Confirmation':
+        return (
+          <Card>
+            <Descriptions title="Chatbot Summary" column={1} bordered>
+              {Object.entries(formData).map(([key, value]) => (
+                <Descriptions.Item key={key} label={key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}>
+                  {formatValue(value)}
+                </Descriptions.Item>
+              ))}
+            </Descriptions>
+            <div style={{ marginTop: 16 }}>
+              <strong>Total Additional Cost: </strong>${calculateTotalCost(formData.integrations || [])}/month
+            </div>
+          </Card>
+        );
+
+      default:
+        return null;
+    }
+  };
+
   const columns = [
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
+      render: (text, record) => (
+        <span>
+          {text}
+          {record.id === sampleChatbot.id && (
+            <Tag color="blue" style={{ marginLeft: 8 }}>Template</Tag>
+          )}
+        </span>
+      ),
     },
     {
       title: 'Type',
@@ -180,9 +501,18 @@ const handleCreateChatbot = async () => {
       dataIndex: 'status',
       key: 'status',
       render: status => (
-        <Tag color={status === 'Active' ? 'green' : 'red'}>
+        <Tag color={status === 'ACTIVE' ? 'green' : 'red'}>
           {status}
         </Tag>
+      ),
+    },
+    {
+      title: 'Details',
+      key: 'details',
+      render: (_, record) => (
+        <Tooltip title={renderChatbotDetails(record)} placement="left" overlayStyle={{ maxWidth: 500 }}>
+          <Button>View Details</Button>
+        </Tooltip>
       ),
     },
     {
@@ -191,266 +521,94 @@ const handleCreateChatbot = async () => {
       render: (_, record) => (
         <span>
           <Button icon={<EditOutlined />} style={{ marginRight: 8 }}>Edit</Button>
-          <Button icon={<DeleteOutlined />} danger onClick={() => handleDeleteChatbot(record.id)}>Delete</Button>
+          {record.id !== sampleChatbot.id && (
+            <Button icon={<DeleteOutlined />} danger onClick={() => handleDeleteChatbot(record.id)}>Delete</Button>
+          )}
         </span>
       ),
     },
   ];
 
+
+
   const steps = [
     {
       title: 'Basic Info',
-      icon: <InfoCircleOutlined />,
-      content: (
-        <>
-          <Form.Item name="name" label="Chatbot Name" rules={[{ required: true, message: 'Please input the chatbot name!' }]}>
-            <Input />
-          </Form.Item>
-          <Form.Item name="type" label="Chatbot Type" rules={[{ required: true, message: 'Please select the chatbot type!' }]}>
-            <Select>
-              <Option value="Customer Support">Customer Support</Option>
-              <Option value="Sales">Sales</Option>
-              <Option value="FAQ">FAQ</Option>
-              <Option value="Lead Generation">Lead Generation</Option>
-              <Option value="E-commerce Assistant">E-commerce Assistant</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item name="description" label="Description">
-            <TextArea rows={4} />
-          </Form.Item>
-          <Form.Item name="language" label="Primary Language" rules={[{ required: true, message: 'Please select the primary language!' }]}>
-            <Select>
-              <Option value="en">English</Option>
-              <Option value="es">Spanish</Option>
-              <Option value="fr">French</Option>
-              <Option value="de">German</Option>
-              <Option value="zh">Chinese</Option>
-            </Select>
-          </Form.Item>
-        </>
-      ),
+      icon: <InfoCircleOutlined />
     },
     {
       title: 'Integrations',
-      icon: <AppstoreOutlined />,
-      content: (
-        <>
-          <Form.Item name="integrations" label="Select Integrations">
-            <Checkbox.Group>
-              <Card>
-                <Checkbox value="Website" style={{ marginRight: 8 }}><GlobalOutlined /> Website (Free)</Checkbox>
-              </Card>
-              <Card style={{ marginTop: 16 }}>
-                <Checkbox value="WhatsApp" style={{ marginRight: 8 }}><WhatsAppOutlined /> WhatsApp ($20/month)</Checkbox>
-              </Card>
-              <Card style={{ marginTop: 16 }}>
-                <Checkbox value="Slack" style={{ marginRight: 8 }}><SlackOutlined /> Slack ($15/month)</Checkbox>
-              </Card>
-              <Card style={{ marginTop: 16 }}>
-                <Checkbox value="Discord" style={{ marginRight: 8 }}><FaDiscord /> Discord ($15/month)</Checkbox>
-              </Card>
-            </Checkbox.Group>
-          </Form.Item>
-          <Form.Item name="customIntegration" label="Custom Integration URL">
-            <Input placeholder="https://your-api-endpoint.com" />
-          </Form.Item>
-        </>
-      ),
+      icon: <AppstoreOutlined />
     },
     {
       title: 'Appearance',
-      icon: <SkinOutlined />,
-      content: (
-        <>
-          <Title level={4}>Appearance</Title>
-          <Form.Item name="theme" label="Chat Theme">
-            <Radio.Group>
-              <Radio value="light">Light</Radio>
-              <Radio value="dark">Dark</Radio>
-              <Radio value="custom">Custom</Radio>
-            </Radio.Group>
-          </Form.Item>
-          <Form.Item name="primaryColor" label="Primary Color">
-            <ColorPicker />
-          </Form.Item>
-          <Form.Item name="fontSelection" label="Font Selection">
-            <Select>
-              <Option value="Arial">Arial</Option>
-              <Option value="Helvetica">Helvetica</Option>
-              <Option value="Times New Roman">Times New Roman</Option>
-              <Option value="Courier">Courier</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item
-            name="chatIcon"
-            label="Chat Icon"
-            valuePropName="fileList"
-            getValueFromEvent={normFile}
-          >
-            <Upload
-              name="logo"
-              listType="picture"
-              beforeUpload={() => false} // Prevent auto upload
-            >
-              <Button icon={<UploadOutlined />}>Upload Icon</Button>
-            </Upload>
-          </Form.Item>
-        </>
-      ),
+      icon: <SkinOutlined />
     },
     {
       title: 'Behavior',
-      icon: <ControlOutlined />,
-      content: (
-        <>
-          <Form.Item name="welcomeMessage" label="Welcome Message">
-            <Input.TextArea rows={4} />
-          </Form.Item>
-          <Form.Item name="fallbackMessage" label="Fallback Message">
-            <Input.TextArea rows={4} />
-          </Form.Item>
-          <Form.Item name="inputPlaceholder" label="Input Placeholder">
-            <Input />
-          </Form.Item>
-          <Form.Item name="responseTime" label="Simulated Response Time (seconds)">
-            <Slider min={0} max={5} step={0.5} />
-          </Form.Item>
-          <Form.Item name="enableTypingIndicator" label="Enable Typing Indicator" valuePropName="checked">
-            <Switch />
-          </Form.Item>
-        </>
-      ),
+      icon: <ControlOutlined />
     },
     {
       title: 'Training',
-      icon: <BookOutlined />,
-      content: (
-        <>
-          <Title level={4}>Training</Title>
-          <Form.Item
-            name="trainingData"
-            label="Upload Training Data"
-            valuePropName="fileList"
-            getValueFromEvent={normFile}
-          >
-            <Upload
-              name="file"
-              listType="text"
-              beforeUpload={() => false} // Prevent auto upload
-            >
-              <Button icon={<UploadOutlined />}>Select File</Button>
-            </Upload>
-          </Form.Item>
-          <Form.Item name="knowledgeBase" label="Knowledge Base URL">
-            <Input placeholder="https://your-knowledge-base.com" />
-          </Form.Item>
-          <Form.Item name="enableLearning" label="Enable Continuous Learning" valuePropName="checked">
-            <Switch />
-          </Form.Item>
-          <Form.Item name="confidenceThreshold" label="Confidence Threshold">
-            <Slider min={0} max={1} step={0.1} />
-          </Form.Item>
-        </>
-      ),
+      icon: <BookOutlined />
     },
     {
       title: 'Advanced',
-      icon: <SettingOutlined />,
-      content: (
-        <>
-          <Form.Item name="maxConversationLength" label="Max Conversation Length">
-            <InputNumber min={10} max={100} />
-          </Form.Item>
-          <Form.Item name="enableHumanHandoff" label="Enable Human Handoff" valuePropName="checked">
-            <Switch />
-          </Form.Item>
-          <Form.Item name="handoffThreshold" label="Human Handoff Threshold">
-            <Slider min={0} max={1} step={0.1} />
-          </Form.Item>
-          <Form.Item name="enableAnalytics" label="Enable Analytics" valuePropName="checked">
-            <Switch />
-          </Form.Item>
-          <Form.Item name="sessionTimeout" label="Session Timeout (minutes)">
-            <InputNumber min={5} max={60} />
-          </Form.Item>
-        </>
-      ),
+      icon: <SettingOutlined />
     },
-  {
-  title: 'Confirmation',
-  icon: <CheckCircleOutlined />,
-  content: (
-    <Form.Item shouldUpdate>
-      {() => {
-        const values = form.getFieldsValue();
-        const totalCost = calculateTotalCost(values.integrations || []);
-        return (
-          <Card>
-            <Title level={4}>Chatbot Summary</Title>
-            <Descriptions column={1}>
-              {Object.entries(values).map(([key, value]) => (
-                <Descriptions.Item key={key} label={key}>
-                  {formatValue(value)}
-                </Descriptions.Item>
-              ))}
-            </Descriptions>
-            <Text strong>Total Additional Cost: ${totalCost}/month</Text>
-          </Card>
-        );
-      }}
-    </Form.Item>
-  ),
-},
+    {
+      title: 'Confirmation',
+      icon: <CheckCircleOutlined />
+    },
   ];
 
   return (
-    <div className="my-chatbots-container">
+    <div className="my-chatbots-container" style={{ padding: '24px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <Title level={2}>My Chatbots</Title>
-               <Button type="primary" icon={<PlusOutlined />} onClick={showModal}>
+        <Button type="primary" icon={<PlusOutlined />} onClick={showModal}>
           Create New Chatbot
         </Button>
       </div>
 
       <Table columns={columns} dataSource={chatbots} rowKey="id" />
 
-    <Modal
-  title="Create New Chatbot"
-  visible={isModalVisible}
-  onCancel={handleCancel}
-  footer={null}
-  width={1000}
->
-  <Form form={form} layout="vertical" onFinish={handleCreateChatbot}>
-    <Steps current={currentStep} onChange={handleStepChange}>
-      {steps.map(item => (
-        <Step key={item.title} title={item.title} icon={item.icon} />
-      ))}
-    </Steps>
+      <Modal
+        title="Create New Chatbot"
+        visible={isModalVisible}
+        onCancel={handleCancel}
+        footer={null}
+        width={800}
+        styles={{ maxHeight: '70vh', overflow: 'auto' }}
+      >
+        <Steps current={currentStep}>
+          {steps.map(item => (
+            <Step key={item.title} title={item.title} icon={item.icon} />
+          ))}
+        </Steps>
 
-    <div style={{ marginTop: 24 }}>
-      {steps[currentStep].content}
-    </div>
+        <div style={{ marginTop: 24 }}>
+          {renderFormStep(steps[currentStep])}
+        </div>
 
-    <div style={{ marginTop: 24 }}>
-      {currentStep > 0 && (
-        <Button style={{ marginRight: 8 }} onClick={() => setCurrentStep(currentStep - 1)}>
-          Previous
-        </Button>
-      )}
-      {currentStep < steps.length - 1 && (
-        <Button type="primary" onClick={() => handleStepChange(currentStep + 1)}>
-          Next
-        </Button>
-      )}
-      {currentStep === steps.length - 1 && (
-        <Button type="primary" htmlType="submit">
-          Create Chatbot
-        </Button>
-      )}
-    </div>
-  </Form>
-</Modal>
+        <div style={{ marginTop: 24 }}>
+          {currentStep > 0 && (
+            <Button style={{ marginRight: 8 }} onClick={() => setCurrentStep(prev => prev - 1)}>
+              Previous
+            </Button>
+          )}
+          {currentStep < steps.length - 1 && (
+            <Button type="primary" onClick={() => setCurrentStep(prev => prev + 1)}>
+              Next
+            </Button>
+          )}
+          {currentStep === steps.length - 1 && (
+            <Button type="primary" onClick={handleCreateChatbot}>
+              Create Chatbot
+            </Button>
+          )}
+        </div>
+      </Modal>
     </div>
   );
 };
