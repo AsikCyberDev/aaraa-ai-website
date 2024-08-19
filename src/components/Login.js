@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { SendOutlined, SmileOutlined, LoadingOutlined, LockOutlined } from '@ant-design/icons';
+import { SendOutlined, SmileOutlined, LoadingOutlined, LockOutlined, GoogleOutlined, FacebookOutlined, GithubOutlined } from '@ant-design/icons';
 import { Button, message, Switch, Typography } from 'antd';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -55,6 +55,18 @@ const ChatbotLogin = ({ onLogin }) => {
     setTimeout(() => {
       addMessage('Signup successful! Thank you for joining the AI Chatbot community.', 'bot');
       message.success('Signup successful!');
+      setIsLoading(false);
+      onLogin();
+    }, 1500);
+  };
+
+  const socialLogin = (platform) => {
+    const emoji = platform === 'Google' ? '🌐' : platform === 'Facebook' ? '🪧' : '🐱';
+    addMessage(`Logging in with ${platform} ${emoji}`, 'user');
+    setIsLoading(true);
+    setTimeout(() => {
+      addMessage(`Login with ${platform} successful! Welcome to the AI Chatbot.`, 'bot');
+      message.success(`Login with ${platform} successful!`);
       setIsLoading(false);
       onLogin();
     }, 1500);
@@ -190,11 +202,28 @@ const ChatbotLogin = ({ onLogin }) => {
             checked={isLogin}
             onChange={(checked) => {
               setIsLogin(checked);
-              setCurrentField('username');
+              setCurrentField(checked ? 'username' : 'email');
               setMessages([]);
               addMessage(`Please enter your ${checked ? 'username' : 'email'} to ${checked ? 'log in' : 'sign up'}.`, 'bot');
             }}
           />
+        </div>
+        <div style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: '16px' }}>Or log in with:</span>
+          <div>
+            {['Google', 'Facebook', 'GitHub'].map((platform) => (
+              <Button
+                key={platform}
+                icon={
+                  platform === 'Google' ? <GoogleOutlined /> :
+                  platform === 'Facebook' ? <FacebookOutlined /> :
+                  <GithubOutlined />
+                }
+                onClick={() => socialLogin(platform)}
+                style={{ marginLeft: '8px' }}
+              />
+            ))}
+          </div>
         </div>
       </motion.div>
     </div>
