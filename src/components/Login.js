@@ -1,9 +1,11 @@
+
 import React, { useState, useEffect, useRef } from 'react';
-import { SendOutlined, SmileOutlined, LoadingOutlined, LockOutlined, GoogleOutlined, FacebookOutlined, GithubOutlined } from '@ant-design/icons';
-import { Button, message, Switch, Typography } from 'antd';
+import { SendOutlined, SmileOutlined, LoadingOutlined, LockOutlined, GoogleOutlined, FacebookOutlined, GithubOutlined, UserOutlined, MailOutlined, PhoneOutlined, HomeOutlined, ManOutlined, WomanOutlined } from '@ant-design/icons';
+import { Button, message, Switch, Typography, Select, Input } from 'antd';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const { Title } = Typography;
+const { Option } = Select;
 
 const ChatbotLogin = ({ onLogin }) => {
   const [isLogin, setIsLogin] = useState(true);
@@ -11,6 +13,14 @@ const ChatbotLogin = ({ onLogin }) => {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [currentField, setCurrentField] = useState('username');
+  const [signupData, setSignupData] = useState({
+    name: '',
+    sex: '',
+    mobile: '',
+    countryCode: '',
+    email: '',
+    address: '',
+  });
   const messagesEndRef = useRef(null);
 
   const addMessage = (text, sender) => {
@@ -22,18 +32,30 @@ const ChatbotLogin = ({ onLogin }) => {
       addMessage(currentField === 'password' ? '*'.repeat(inputValue.length) : inputValue, 'user');
       setInputValue('');
 
-      if (currentField === 'username') {
-        setCurrentField('password');
-        addMessage('Please enter your password:', 'bot');
-      } else if (currentField === 'password') {
-        if (isLogin) {
+      if (isLogin) {
+        if (currentField === 'username') {
+          setCurrentField('password');
+          addMessage('Please enter your password:', 'bot');
+        } else if (currentField === 'password') {
           login();
-        } else {
+        }
+      } else {
+        if (currentField === 'name') {
+          setSignupData(prev => ({ ...prev, name: inputValue }));
+          setCurrentField('sex');
+          addMessage('Please select your sex:', 'bot');
+        } else if (currentField === 'mobile') {
+          setSignupData(prev => ({ ...prev, mobile: inputValue }));
           setCurrentField('email');
           addMessage('Please enter your email:', 'bot');
+        } else if (currentField === 'email') {
+          setSignupData(prev => ({ ...prev, email: inputValue }));
+          setCurrentField('address');
+          addMessage('Please enter your address:', 'bot');
+        } else if (currentField === 'address') {
+          setSignupData(prev => ({ ...prev, address: inputValue }));
+          signup();
         }
-      } else if (currentField === 'email') {
-        signup();
       }
     }
   };
@@ -53,10 +75,13 @@ const ChatbotLogin = ({ onLogin }) => {
     addMessage('Signing up...', 'bot');
     setIsLoading(true);
     setTimeout(() => {
-      addMessage('Signup successful! Thank you for joining the AI Chatbot community.', 'bot');
+      addMessage('Signup successful! You will receive a confirmation email shortly. Once confirmed, you can log in using your credentials.', 'bot');
       message.success('Signup successful!');
       setIsLoading(false);
-      onLogin();
+      setIsLogin(true);
+      setCurrentField('username');
+      setMessages([]);
+      addMessage('Please enter your username to log in.', 'bot');
     }, 1500);
   };
 
@@ -119,7 +144,7 @@ const ChatbotLogin = ({ onLogin }) => {
           fontWeight: 'bold',
           fontSize: '20px'
         }}>
-          <Title level={3} style={{ color: 'white', marginBottom: 0 }}>AI Chatbot Login</Title>
+          <Title level={3} style={{ color: 'white', marginBottom: 0 }}>AI Chatbot {isLogin ? 'Login' : 'Signup'}</Title>
         </div>
         <div style={{
           flex: 1,
@@ -163,24 +188,74 @@ const ChatbotLogin = ({ onLogin }) => {
             display: 'flex',
             alignItems: 'center',
           }}>
-            {currentField === 'password' && <LockOutlined style={{ marginRight: '8px', color: 'rgba(0, 0, 0, 0.3)' }} />}
-            <input
-              type={currentField === 'password' ? 'password' : 'text'}
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyPress={(e) => {
-                if (e.key === 'Enter') {
-                  onInputSubmit();
-                }
-              }}
-              placeholder={currentField === 'username' ? 'Enter your username' : currentField === 'password' ? 'Enter your password' : 'Enter your email'}
-              style={{
-                flex: 1,
-                border: 'none',
-                outline: 'none',
-                fontSize: '16px',
-              }}
-            />
+            {isLogin ? (
+              currentField === 'password' ? (
+                <LockOutlined style={{ marginRight: '8px', color: 'rgba(0, 0, 0, 0.3)' }} />
+              ) : (
+                <UserOutlined style={{ marginRight: '8px', color: 'rgba(0, 0, 0, 0.3)' }} />
+              )
+            ) : (
+              currentField === 'sex' ? (
+                <Select
+                  style={{ width: '100%' }}
+                  placeholder="Select your sex"
+                  onChange={(value) => {
+                    setSignupData(prev => ({ ...prev, sex: value }));
+                    setCurrentField('mobile');
+                    addMessage('Please enter your mobile number:', 'bot');
+                  }}
+                >
+                  <Option value="male"><ManOutlined /> Male</Option>
+                  <Option value="female"><WomanOutlined /> Female</Option>
+                  <Option value="other">Other</Option>
+                </Select>
+              ) : currentField === 'mobile' ? (
+                <>
+                  <Select
+                    style={{ width: '30%', marginRight: '8px' }}
+                    defaultValue="+1"
+                    onChange={(value) => setSignupData(prev => ({ ...prev, countryCode: value }))}
+                  >
+                    <Option value="+1">🇺🇸 +1</Option>
+                    <Option value="+44">🇬🇧 +44</Option>
+                    <Option value="+91">🇮🇳 +91</Option>
+                    <Option value="+86">🇨🇳 +86</Option>
+                  </Select>
+                  <Input
+                    style={{ width: '70%' }}
+                    placeholder="Enter your mobile number"
+                    prefix={<PhoneOutlined style={{ marginRight: '8px', color: 'rgba(0, 0, 0, 0.3)' }} />}
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        onInputSubmit();
+                      }
+                    }}
+                  />
+                </>
+              ) : (
+                <Input
+                  placeholder={
+                    currentField === 'name' ? 'Enter your name' :
+                    currentField === 'email' ? 'Enter your email' :
+                    'Enter your address'
+                  }
+                  prefix={
+                    currentField === 'name' ? <UserOutlined style={{ marginRight: '8px', color: 'rgba(0, 0, 0, 0.3)' }} /> :
+                    currentField === 'email' ? <MailOutlined style={{ marginRight: '8px', color: 'rgba(0, 0, 0, 0.3)' }} /> :
+                    <HomeOutlined style={{ marginRight: '8px', color: 'rgba(0, 0, 0, 0.3)' }} />
+                  }
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      onInputSubmit();
+                    }
+                  }}
+                />
+              )
+            )}
           </div>
           <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <Button
@@ -202,29 +277,31 @@ const ChatbotLogin = ({ onLogin }) => {
             checked={isLogin}
             onChange={(checked) => {
               setIsLogin(checked);
-              setCurrentField(checked ? 'username' : 'email');
+              setCurrentField(checked ? 'username' : 'name');
               setMessages([]);
-              addMessage(`Please enter your ${checked ? 'username' : 'email'} to ${checked ? 'log in' : 'sign up'}.`, 'bot');
+              addMessage(`Please enter your ${checked ? 'username' : 'name'} to ${checked ? 'log in' : 'sign up'}.`, 'bot');
             }}
           />
         </div>
-        <div style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: '16px' }}>Or log in with:</span>
-          <div>
-            {['Google', 'Facebook', 'GitHub'].map((platform) => (
-              <Button
-                key={platform}
-                icon={
-                  platform === 'Google' ? <GoogleOutlined /> :
-                  platform === 'Facebook' ? <FacebookOutlined /> :
-                  <GithubOutlined />
-                }
-                onClick={() => socialLogin(platform)}
-                style={{ marginLeft: '8px' }}
-              />
-            ))}
+        {isLogin && (
+          <div style={{ padding: '0 20px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '16px' }}>Or log in with:</span>
+            <div>
+              {['Google', 'Facebook', 'GitHub'].map((platform) => (
+                <Button
+                  key={platform}
+                  icon={
+                    platform === 'Google' ? <GoogleOutlined /> :
+                    platform === 'Facebook' ? <FacebookOutlined /> :
+                    <GithubOutlined />
+                  }
+                  onClick={() => socialLogin(platform)}
+                  style={{ marginLeft: '8px' }}
+                />
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </motion.div>
     </div>
   );
