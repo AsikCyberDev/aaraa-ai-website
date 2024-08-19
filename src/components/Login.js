@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { SendOutlined, SmileOutlined, LoadingOutlined } from '@ant-design/icons';
+import { SendOutlined, SmileOutlined, LoadingOutlined, LockOutlined } from '@ant-design/icons';
 import { Button, message, Switch, Typography } from 'antd';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -19,7 +19,7 @@ const ChatbotLogin = ({ onLogin }) => {
 
   const onInputSubmit = () => {
     if (inputValue.trim() !== '') {
-      addMessage(inputValue, 'user');
+      addMessage(currentField === 'password' ? '*'.repeat(inputValue.length) : inputValue, 'user');
       setInputValue('');
 
       if (currentField === 'username') {
@@ -42,7 +42,7 @@ const ChatbotLogin = ({ onLogin }) => {
     addMessage('Logging in...', 'bot');
     setIsLoading(true);
     setTimeout(() => {
-      addMessage('Login successful!', 'bot');
+      addMessage('Login successful! Welcome back to the AI Chatbot.', 'bot');
       message.success('Login successful!');
       setIsLoading(false);
       onLogin();
@@ -53,7 +53,7 @@ const ChatbotLogin = ({ onLogin }) => {
     addMessage('Signing up...', 'bot');
     setIsLoading(true);
     setTimeout(() => {
-      addMessage('Signup successful!', 'bot');
+      addMessage('Signup successful! Thank you for joining the AI Chatbot community.', 'bot');
       message.success('Signup successful!');
       setIsLoading(false);
       onLogin();
@@ -61,7 +61,7 @@ const ChatbotLogin = ({ onLogin }) => {
   };
 
   useEffect(() => {
-    addMessage('Welcome! Please enter your username to get started.', 'bot');
+    addMessage('Welcome to the AI Chatbot! I\'m here to assist you. Please enter your username to get started.', 'bot');
   }, []);
 
   useEffect(() => {
@@ -76,7 +76,7 @@ const ChatbotLogin = ({ onLogin }) => {
       minHeight: '100vh',
       overflow: 'hidden',
       position: 'relative',
-      backgroundImage: 'url(./components/background-ai.jpg)',
+      backgroundImage: 'url("https://images.unsplash.com/photo-1536183922588-166604504d5e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1349&q=80")',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
     }}>
@@ -88,7 +88,7 @@ const ChatbotLogin = ({ onLogin }) => {
           width: '100%',
           maxWidth: '400px',
           height: '600px',
-          backgroundColor: 'rgba(255, 255, 255, 0.8)',
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
           borderRadius: '20px',
           boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
           display: 'flex',
@@ -100,21 +100,22 @@ const ChatbotLogin = ({ onLogin }) => {
         }}
       >
         <div style={{ 
-          backgroundColor: '#1890ff', 
+          background: 'linear-gradient(135deg, #1890ff, #40a9ff)', 
           color: 'white', 
-          padding: '15px', 
+          padding: '20px', 
           textAlign: 'center',
           fontWeight: 'bold',
-          fontSize: '18px'
+          fontSize: '20px'
         }}>
-          <Title level={4} style={{ color: 'white', marginBottom: 0 }}>Chatbot Login</Title>
+          <Title level={3} style={{ color: 'white', marginBottom: 0 }}>AI Chatbot Login</Title>
         </div>
         <div style={{
           flex: 1,
           overflowY: 'auto',
-          padding: '15px',
+          padding: '20px',
           display: 'flex',
           flexDirection: 'column',
+          backgroundImage: 'linear-gradient(to bottom, rgba(230, 247, 255, 0.8), rgba(240, 240, 240, 0.8))',
         }}>
           <AnimatePresence>
             {messages.map((msg, index) => (
@@ -126,11 +127,12 @@ const ChatbotLogin = ({ onLogin }) => {
                 transition={{ duration: 0.3 }}
                 style={{
                   alignSelf: msg.sender === 'bot' ? 'flex-start' : 'flex-end',
-                  backgroundColor: msg.sender === 'bot' ? '#e6f7ff' : '#f0f0f0',
-                  padding: '10px 15px',
-                  borderRadius: '18px',
-                  marginBottom: '10px',
+                  backgroundColor: msg.sender === 'bot' ? 'rgba(24, 144, 255, 0.1)' : 'rgba(240, 240, 240, 0.8)',
+                  padding: '12px 18px',
+                  borderRadius: '20px',
+                  marginBottom: '12px',
                   maxWidth: '70%',
+                  fontSize: '16px',
                 }}
               >
                 {msg.text}
@@ -139,38 +141,49 @@ const ChatbotLogin = ({ onLogin }) => {
             <div ref={messagesEndRef} />
           </AnimatePresence>
         </div>
-        <div style={{ padding: '15px', display: 'flex', alignItems: 'center' }}>
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                onInputSubmit();
-              }
-            }}
-            placeholder={currentField === 'username' ? 'Username' : currentField === 'password' ? 'Password' : 'Email'}
-            style={{
-              flex: 1,
-              padding: '10px',
-              borderRadius: '20px',
-              border: 'none',
-              marginRight: '10px',
-              boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-            }}
-          />
+        <div style={{ padding: '20px', display: 'flex', alignItems: 'center' }}>
+          <div style={{
+            flex: 1,
+            padding: '12px',
+            borderRadius: '24px',
+            backgroundColor: 'white',
+            boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+            display: 'flex',
+            alignItems: 'center',
+          }}>
+            {currentField === 'password' && <LockOutlined style={{ marginRight: '8px', color: 'rgba(0, 0, 0, 0.3)' }} />}
+            <input
+              type={currentField === 'password' ? 'password' : 'text'}
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  onInputSubmit();
+                }
+              }}
+              placeholder={currentField === 'username' ? 'Enter your username' : currentField === 'password' ? 'Enter your password' : 'Enter your email'}
+              style={{
+                flex: 1,
+                border: 'none',
+                outline: 'none',
+                fontSize: '16px',
+              }}
+            />
+          </div>
           <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <Button
               type="primary"
               shape="circle"
+              size="large"
               icon={isLoading ? <LoadingOutlined /> : <SendOutlined />}
               onClick={onInputSubmit}
               disabled={isLoading}
+              style={{ marginLeft: '12px' }}
             />
           </motion.div>
         </div>
-        <div style={{ padding: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span>{isLogin ? 'New user?' : 'Already have an account?'}</span>
+        <div style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: '16px' }}>{isLogin ? 'New user? Sign up now and explore the AI Chatbot!' : 'Already have an account? Log in and continue your AI Chatbot journey.'}</span>
           <Switch
             checkedChildren={<SmileOutlined />}
             unCheckedChildren={<SmileOutlined />}
@@ -179,7 +192,7 @@ const ChatbotLogin = ({ onLogin }) => {
               setIsLogin(checked);
               setCurrentField('username');
               setMessages([]);
-              addMessage(`Please enter your ${checked ? 'username' : 'email'} to get started.`, 'bot');
+              addMessage(`Please enter your ${checked ? 'username' : 'email'} to ${checked ? 'log in' : 'sign up'}.`, 'bot');
             }}
           />
         </div>
