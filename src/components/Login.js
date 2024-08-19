@@ -17,7 +17,7 @@ const ChatbotLogin = ({ onLogin }) => {
     name: '',
     sex: '',
     mobile: '',
-    countryCode: '',
+    countryCode: '+1',
     email: '',
     address: '',
   });
@@ -75,13 +75,9 @@ const ChatbotLogin = ({ onLogin }) => {
     addMessage('Signing up...', 'bot');
     setIsLoading(true);
     setTimeout(() => {
-      addMessage('Signup successful! You will receive a confirmation email shortly. Once confirmed, you can log in using your credentials.', 'bot');
-      message.success('Signup successful!');
+      addMessage('Signup successful! Please check your email for a confirmation link. Once confirmed, you can log in using your credentials.', 'bot');
+      message.success('Signup successful! Please check your email for confirmation.');
       setIsLoading(false);
-      setIsLogin(true);
-      setCurrentField('username');
-      setMessages([]);
-      addMessage('Please enter your username to log in.', 'bot');
     }, 1500);
   };
 
@@ -213,7 +209,7 @@ const ChatbotLogin = ({ onLogin }) => {
                 <>
                   <Select
                     style={{ width: '30%', marginRight: '8px' }}
-                    defaultValue="+1"
+                    value={signupData.countryCode}
                     onChange={(value) => setSignupData(prev => ({ ...prev, countryCode: value }))}
                   >
                     <Option value="+1">🇺🇸 +1</Option>
