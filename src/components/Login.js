@@ -1,11 +1,36 @@
-
-import React, { useState, useEffect, useRef } from 'react';
-import { SendOutlined, SmileOutlined, LoadingOutlined, LockOutlined, GoogleOutlined, FacebookOutlined, GithubOutlined, UserOutlined, MailOutlined, PhoneOutlined, HomeOutlined, ManOutlined, WomanOutlined } from '@ant-design/icons';
-import { Button, message, Switch, Typography, Select, Input } from 'antd';
-import { motion, AnimatePresence } from 'framer-motion';
+import { FacebookOutlined, GithubOutlined, GoogleOutlined, HomeOutlined, LoadingOutlined, LockOutlined, MailOutlined, ManOutlined, PhoneOutlined, SendOutlined, SmileOutlined, UserOutlined, WomanOutlined } from '@ant-design/icons';
+import { gql, useMutation } from '@apollo/client';
+import { Button, Input, Select, Switch, Typography, message } from 'antd';
+import { AnimatePresence, motion } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
 
 const { Title } = Typography;
 const { Option } = Select;
+
+// Define GraphQL mutations
+const LOGIN_MUTATION = gql`
+  mutation Login($username: String!, $password: String!) {
+    login(username: $username, password: $password) {
+      token
+      user {
+        id
+        username
+      }
+    }
+  }
+`;
+
+const SIGNUP_MUTATION = gql`
+  mutation Signup($name: String!, $sex: String!, $mobile: String!, $email: String!, $address: String!, $password: String!) {
+    signup(name: $name, sex: $sex, mobile: $mobile, email: $email, address: $address, password: $password) {
+      token
+      user {
+        id
+        username
+      }
+    }
+  }
+`;
 
 const ChatbotLogin = ({ onLogin }) => {
   const [isLogin, setIsLogin] = useState(true);
@@ -20,8 +45,17 @@ const ChatbotLogin = ({ onLogin }) => {
     countryCode: '+1',
     email: '',
     address: '',
+    password: '',
+  });
+  const [loginData, setLoginData] = useState({
+    username: '',
+    password: '',
   });
   const messagesEndRef = useRef(null);
+
+  // GraphQL mutations
+  const [loginMutation] = useMutation(LOGIN_MUTATION);
+  const [signupMutation] = useMutation(SIGNUP_MUTATION);
 
   const addMessage = (text, sender) => {
     setMessages(prev => [...prev, { text, sender }]);
@@ -34,9 +68,11 @@ const ChatbotLogin = ({ onLogin }) => {
 
       if (isLogin) {
         if (currentField === 'username') {
+          setLoginData(prev => ({ ...prev, username: inputValue }));
           setCurrentField('password');
           addMessage('Please enter your password:', 'bot');
         } else if (currentField === 'password') {
+          setLoginData(prev => ({ ...prev, password: inputValue }));
           login();
         }
       } else {
@@ -54,37 +90,78 @@ const ChatbotLogin = ({ onLogin }) => {
           addMessage('Please enter your address:', 'bot');
         } else if (currentField === 'address') {
           setSignupData(prev => ({ ...prev, address: inputValue }));
+          setCurrentField('password');
+          addMessage('Please enter your password:', 'bot');
+        } else if (currentField === 'password') {
+          setSignupData(prev => ({ ...prev, password: inputValue }));
           signup();
         }
       }
     }
   };
 
-  const login = () => {
+  const login = async () => {
     addMessage('Logging in...', 'bot');
     setIsLoading(true);
-    setTimeout(() => {
-      addMessage('Login successful! Welcome back to the AI Chatbot.', 'bot');
-      message.success('Login successful!');
+    try {
+      const { data } = await loginMutation({
+        variables: {
+          username: loginData.username,
+          password: loginData.password
+        }
+      });
+      if (data.login) {
+        addMessage('Login successful! Welcome back to the AI Chatbot.', 'bot');
+        message.success('Login successful!');
+        onLogin(data.login.token);
+      } else {
+        addMessage('Login failed. Please check your credentials and try again.', 'bot');
+        message.error('Login failed');
+      }
+    } catch (error) {
+      addMessage('An error occurred during login. Please try again.', 'bot');
+      message.error('Login error');
+      console.error('Login error:', error);
+    } finally {
       setIsLoading(false);
-      onLogin();
-    }, 1500);
+    }
   };
 
-  const signup = () => {
+  const signup = async () => {
     addMessage('Signing up...', 'bot');
     setIsLoading(true);
-    setTimeout(() => {
-      addMessage('Signup successful! Please check your email for a confirmation link. Once confirmed, you can log in using your credentials.', 'bot');
-      message.success('Signup successful! Please check your email for confirmation.');
+    try {
+      const { data } = await signupMutation({
+        variables: {
+          name: signupData.name,
+          sex: signupData.sex,
+          mobile: signupData.countryCode + signupData.mobile,
+          email: signupData.email,
+          address: signupData.address,
+          password: signupData.password
+        }
+      });
+      if (data.signup) {
+        addMessage('Signup successful! Please check your email for a confirmation link. Once confirmed, you can log in using your credentials.', 'bot');
+        message.success('Signup successful! Please check your email for confirmation.');
+      } else {
+        addMessage('Signup failed. Please check your information and try again.', 'bot');
+        message.error('Signup failed');
+      }
+    } catch (error) {
+      addMessage('An error occurred during signup. Please try again.', 'bot');
+      message.error('Signup error');
+      console.error('Signup error:', error);
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const socialLogin = (platform) => {
     const emoji = platform === 'Google' ? '🌐' : platform === 'Facebook' ? '🪧' : '🐱';
     addMessage(`Logging in with ${platform} ${emoji}`, 'user');
     setIsLoading(true);
+    // Note: Implement actual social login logic here
     setTimeout(() => {
       addMessage(`Login with ${platform} successful! Welcome to the AI Chatbot.`, 'bot');
       message.success(`Login with ${platform} successful!`);
@@ -132,10 +209,10 @@ const ChatbotLogin = ({ onLogin }) => {
           zIndex: 1,
         }}
       >
-        <div style={{ 
-          background: 'linear-gradient(135deg, #1890ff, #40a9ff)', 
-          color: 'white', 
-          padding: '20px', 
+        <div style={{
+          background: 'linear-gradient(135deg, #1890ff, #40a9ff)',
+          color: 'white',
+          padding: '20px',
           textAlign: 'center',
           fontWeight: 'bold',
           fontSize: '20px'
@@ -255,13 +332,16 @@ const ChatbotLogin = ({ onLogin }) => {
                 <Input
                   placeholder={
                     currentField === 'name' ? 'Enter your name' :
-                    currentField === 'email' ? 'Enter your email' :
-                    'Enter your address'
+                      currentField === 'email' ? 'Enter your email' :
+                        currentField === 'address' ? 'Enter your address' :
+                          'Enter your password'
                   }
+                  type={currentField === 'password' ? 'password' : 'text'}
                   prefix={
                     currentField === 'name' ? <UserOutlined style={{ marginRight: '8px', color: 'rgba(0, 0, 0, 0.3)' }} /> :
-                    currentField === 'email' ? <MailOutlined style={{ marginRight: '8px', color: 'rgba(0, 0, 0, 0.3)' }} /> :
-                    <HomeOutlined style={{ marginRight: '8px', color: 'rgba(0, 0, 0, 0.3)' }} />
+                      currentField === 'email' ? <MailOutlined style={{ marginRight: '8px', color: 'rgba(0, 0, 0, 0.3)' }} /> :
+                        currentField === 'address' ? <HomeOutlined style={{ marginRight: '8px', color: 'rgba(0, 0, 0, 0.3)' }} /> :
+                          <LockOutlined style={{ marginRight: '8px', color: 'rgba(0, 0, 0, 0.3)' }} />
                   }
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
@@ -309,8 +389,8 @@ const ChatbotLogin = ({ onLogin }) => {
                   key={platform}
                   icon={
                     platform === 'Google' ? <GoogleOutlined /> :
-                    platform === 'Facebook' ? <FacebookOutlined /> :
-                    <GithubOutlined />
+                      platform === 'Facebook' ? <FacebookOutlined /> :
+                        <GithubOutlined />
                   }
                   onClick={() => socialLogin(platform)}
                   style={{ marginLeft: '8px' }}
