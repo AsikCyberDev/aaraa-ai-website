@@ -3,6 +3,8 @@ import { gql, useMutation } from '@apollo/client';
 import { Button, Input, Select, Switch, Typography, message } from 'antd';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useRef, useState } from 'react';
+import { isAuthenticated, setToken } from './authUtils'; // Import the new utilities
+
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -51,9 +53,17 @@ const ChatbotLogin = ({ onLogin }) => {
   });
   const messagesEndRef = useRef(null);
 
-  // GraphQL mutations
   const [signInMutation] = useMutation(SIGNIN_MUTATION);
   const [signupMutation] = useMutation(SIGNUP_MUTATION);
+
+  useEffect(() => {
+    // Check if user is already authenticated
+    if (isAuthenticated()) {
+      onLogin(); // Redirect to main app if already logged in
+    } else {
+      addMessage('Welcome to the AI Chatbot! I\'m here to assist you. Please enter your email to get started.', 'bot');
+    }
+  }, [onLogin]);
 
   const addMessage = (text, sender) => {
     setMessages(prev => [...prev, { text, sender }]);
@@ -63,7 +73,6 @@ const ChatbotLogin = ({ onLogin }) => {
     if (inputValue.trim() !== '') {
       addMessage(currentField === 'password' ? '*'.repeat(inputValue.length) : inputValue, 'user');
       setInputValue('');
-
 
       if (isLogin) {
         if (currentField === 'email') {
@@ -112,9 +121,10 @@ const ChatbotLogin = ({ onLogin }) => {
         }
       });
       if (data.signIn && data.signIn.token) {
+        setToken(data.signIn.token); // Store the token
         addMessage('Login successful! Welcome back to the AI Chatbot.', 'bot');
         message.success('Login successful!');
-        onLogin(data.signIn.token);
+        onLogin(); // Redirect to main app
       } else {
         addMessage('Login failed. Please check your credentials and try again.', 'bot');
         message.error('Login failed');
