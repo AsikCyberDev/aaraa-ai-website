@@ -7,15 +7,11 @@ import React, { useEffect, useRef, useState } from 'react';
 const { Title } = Typography;
 const { Option } = Select;
 
-// Define GraphQL mutations
-const LOGIN_MUTATION = gql`
-  mutation Login($username: String!, $password: String!) {
-    login(username: $username, password: $password) {
+// Updated GraphQL mutations
+const SIGNIN_MUTATION = gql`
+  mutation SignIn($input: SignInInput!) {
+    signIn(input: $input) {
       token
-      user {
-        id
-        username
-      }
     }
   }
 `;
@@ -39,7 +35,7 @@ const ChatbotLogin = ({ onLogin }) => {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [currentField, setCurrentField] = useState('username');
+  const [currentField, setCurrentField] = useState('email');
   const [signupData, setSignupData] = useState({
     name: '',
     sex: '',
@@ -50,13 +46,13 @@ const ChatbotLogin = ({ onLogin }) => {
     password: '',
   });
   const [loginData, setLoginData] = useState({
-    username: '',
+    email: '',
     password: '',
   });
   const messagesEndRef = useRef(null);
 
   // GraphQL mutations
-  const [loginMutation] = useMutation(LOGIN_MUTATION);
+  const [signInMutation] = useMutation(SIGNIN_MUTATION);
   const [signupMutation] = useMutation(SIGNUP_MUTATION);
 
   const addMessage = (text, sender) => {
@@ -68,9 +64,10 @@ const ChatbotLogin = ({ onLogin }) => {
       addMessage(currentField === 'password' ? '*'.repeat(inputValue.length) : inputValue, 'user');
       setInputValue('');
 
+
       if (isLogin) {
-        if (currentField === 'username') {
-          setLoginData(prev => ({ ...prev, username: inputValue }));
+        if (currentField === 'email') {
+          setLoginData(prev => ({ ...prev, email: inputValue }));
           setCurrentField('password');
           addMessage('Please enter your password:', 'bot');
         } else if (currentField === 'password') {
@@ -106,16 +103,18 @@ const ChatbotLogin = ({ onLogin }) => {
     addMessage('Logging in...', 'bot');
     setIsLoading(true);
     try {
-      const { data } = await loginMutation({
+      const { data } = await signInMutation({
         variables: {
-          username: loginData.username,
-          password: loginData.password
+          input: {
+            email: loginData.email,
+            password: loginData.password
+          }
         }
       });
-      if (data.login) {
+      if (data.signIn && data.signIn.token) {
         addMessage('Login successful! Welcome back to the AI Chatbot.', 'bot');
         message.success('Login successful!');
-        onLogin(data.login.token);
+        onLogin(data.signIn.token);
       } else {
         addMessage('Login failed. Please check your credentials and try again.', 'bot');
         message.error('Login failed');
@@ -128,6 +127,7 @@ const ChatbotLogin = ({ onLogin }) => {
       setIsLoading(false);
     }
   };
+
 
   const signup = async () => {
     addMessage('Signing up...', 'bot');
@@ -282,8 +282,8 @@ const ChatbotLogin = ({ onLogin }) => {
                 />
               ) : (
                 <Input
-                  placeholder="Enter your username"
-                  prefix={<UserOutlined style={{ marginRight: '8px', color: 'rgba(0, 0, 0, 0.3)' }} />}
+                  placeholder="Enter your email"
+                  prefix={<MailOutlined style={{ marginRight: '8px', color: 'rgba(0, 0, 0, 0.3)' }} />}
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyPress={(e) => {
