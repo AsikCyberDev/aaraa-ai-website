@@ -21,13 +21,15 @@ const LOGIN_MUTATION = gql`
 `;
 
 const SIGNUP_MUTATION = gql`
-  mutation Signup($name: String!, $sex: String!, $mobile: String!, $email: String!, $address: String!, $password: String!) {
-    signup(name: $name, sex: $sex, mobile: $mobile, email: $email, address: $address, password: $password) {
+  mutation SignUp($input: SignUpInput!) {
+    signUp(input: $input) {
+      id
+      name
+      email
+      mobile
+      address
+      sex
       token
-      user {
-        id
-        username
-      }
     }
   }
 `;
@@ -133,17 +135,20 @@ const ChatbotLogin = ({ onLogin }) => {
     try {
       const { data } = await signupMutation({
         variables: {
-          name: signupData.name,
-          sex: signupData.sex,
-          mobile: signupData.countryCode + signupData.mobile,
-          email: signupData.email,
-          address: signupData.address,
-          password: signupData.password
+          input: {
+            name: signupData.name,
+            sex: signupData.sex,
+            mobile: signupData.countryCode + signupData.mobile,
+            email: signupData.email,
+            address: signupData.address,
+            password: signupData.password
+          }
         }
       });
-      if (data.signup) {
-        addMessage('Signup successful! Please check your email for a confirmation link. Once confirmed, you can log in using your credentials.', 'bot');
-        message.success('Signup successful! Please check your email for confirmation.');
+      if (data.signUp) {
+        addMessage('Signup successful! You can now log in with your credentials.', 'bot');
+        message.success('Signup successful!');
+        onLogin(data.signUp.token);
       } else {
         addMessage('Signup failed. Please check your information and try again.', 'bot');
         message.error('Signup failed');
@@ -299,9 +304,9 @@ const ChatbotLogin = ({ onLogin }) => {
                     addMessage('Please enter your mobile number:', 'bot');
                   }}
                 >
-                  <Option value="male"><ManOutlined /> Male</Option>
-                  <Option value="female"><WomanOutlined /> Female</Option>
-                  <Option value="other">Other</Option>
+                  <Option value="Male"><ManOutlined /> Male</Option>
+                  <Option value="Female"><WomanOutlined /> Female</Option>
+                  <Option value="Other">Other</Option>
                 </Select>
               ) : currentField === 'mobile' ? (
                 <>

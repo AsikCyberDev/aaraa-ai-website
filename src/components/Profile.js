@@ -2,7 +2,6 @@ import {
   BankOutlined,
   BarChartOutlined, BellOutlined,
   CheckCircleOutlined,
-  CloseOutlined,
   CopyOutlined, CrownOutlined, EditOutlined,
   HistoryOutlined,
   IdcardOutlined,
@@ -10,7 +9,7 @@ import {
   MailOutlined,
   MessageOutlined,
   PlusOutlined, RobotOutlined,
-  SaveOutlined, SendOutlined,
+  SaveOutlined,
   ThunderboltOutlined,
   UserOutlined
 } from '@ant-design/icons';
@@ -21,7 +20,7 @@ import {
   Statistic, Table, Tabs, Tag, Timeline,
   Tooltip, Typography, message
 } from 'antd';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 
@@ -137,35 +136,11 @@ function Profile() {
         />
       ),
     },
-    {
-      title: 'Actions',
-      key: 'actions',
-      render: (_, record) => (
-        <Space size="small">
-          <Tooltip title="Edit">
-            <Button icon={<EditOutlined />} size="small" onClick={() => handleEditChatbot(record)} />
-          </Tooltip>
-          <Tooltip title="View Details">
-            <Button icon={<BarChartOutlined />} size="small" onClick={() => handleViewChatbotDetails(record)} />
-          </Tooltip>
-        </Space>
-      ),
-    },
   ];
 
   const copyApiKey = (key) => {
     navigator.clipboard.writeText(key);
     message.success('API key copied to clipboard');
-  };
-
-  const handleEditChatbot = (chatbot) => {
-    message.info(`Editing chatbot: ${chatbot.name}`);
-    // Implement edit chatbot logic here
-  };
-
-  const handleViewChatbotDetails = (chatbot) => {
-    message.info(`Viewing details for chatbot: ${chatbot.name}`);
-    // Implement view chatbot details logic here
   };
 
   const handleGenerateNewApiKey = () => {
@@ -460,72 +435,8 @@ function Profile() {
           </Form.Item>
         </Form>
       </Modal>
-
-      <FloatingChatbot />
     </motion.div>
   );
 }
-
-// Floating Chatbot Component
-const FloatingChatbot = () => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <motion.div
-      style={{
-        position: 'fixed',
-        bottom: 20,
-        right: 20,
-        zIndex: 1000,
-      }}
-    >
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.3 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 50, scale: 0.3 }}
-            style={{
-              background: 'white',
-              padding: 20,
-              borderRadius: 8,
-              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-              marginBottom: 16,
-            }}
-          >
-            <Title level={4}>AI Assistant</Title>
-            <Text>Hello! How can I help you today?</Text>
-            <Input.TextArea
-              rows={4}
-              placeholder="Type your message here..."
-              style={{ marginTop: 16, marginBottom: 16 }}
-            />
-            <Button type="primary" icon={<SendOutlined />}>Send</Button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      <motion.button
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        onClick={() => setIsOpen(!isOpen)}
-        style={{
-          width: 60,
-          height: 60,
-          borderRadius: 30,
-          background: '#1890ff',
-          color: 'white',
-          border: 'none',
-          cursor: 'pointer',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          fontSize: 24,
-        }}
-      >
-        {isOpen ? <CloseOutlined /> : <RobotOutlined />}
-      </motion.button>
-    </motion.div>
-  );
-};
 
 export default Profile;
