@@ -1,4 +1,4 @@
-import { FacebookOutlined, GithubOutlined, GoogleOutlined, HomeOutlined, LoadingOutlined, LockOutlined, MailOutlined, ManOutlined, PhoneOutlined, SendOutlined, SmileOutlined, UserOutlined, WomanOutlined } from '@ant-design/icons';
+import { FacebookOutlined, GithubOutlined, GoogleOutlined, HomeOutlined, LoadingOutlined, LockOutlined, MailOutlined, ManOutlined, PhoneOutlined, RobotOutlined, SendOutlined, SmileOutlined, UserOutlined, WomanOutlined } from '@ant-design/icons';
 import { gql, useMutation } from '@apollo/client';
 import { Button, Input, Select, Switch, Typography, message } from 'antd';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -6,7 +6,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { isAuthenticated, setToken } from './authUtils'; // Import the new utilities
 
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 const { Option } = Select;
 
 // Updated GraphQL mutations
@@ -52,22 +52,29 @@ const ChatbotLogin = ({ onLogin }) => {
     password: '',
   });
   const messagesEndRef = useRef(null);
+  const isInitialMount = useRef(true);
+
 
   const [signInMutation] = useMutation(SIGNIN_MUTATION);
   const [signupMutation] = useMutation(SIGNUP_MUTATION);
 
+
   useEffect(() => {
-    // Check if user is already authenticated
-    if (isAuthenticated()) {
-      onLogin(); // Redirect to main app if already logged in
-    } else {
-      addMessage('Welcome to the AI Chatbot! I\'m here to assist you. Please enter your email to get started.', 'bot');
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      if (!isAuthenticated()) {
+        addMessage('Welcome to the AI Chatbot! I\'m here to assist you. Please enter your email to get started.', 'bot');
+      } else {
+        onLogin();
+      }
     }
   }, [onLogin]);
 
   const addMessage = (text, sender) => {
     setMessages(prev => [...prev, { text, sender }]);
   };
+
+
 
   const onInputSubmit = () => {
     if (inputValue.trim() !== '') {
@@ -185,9 +192,6 @@ const ChatbotLogin = ({ onLogin }) => {
     }, 1500);
   };
 
-  useEffect(() => {
-    addMessage('Welcome to the AI Chatbot! I\'m here to assist you. Please enter your username to get started.', 'bot');
-  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -201,7 +205,7 @@ const ChatbotLogin = ({ onLogin }) => {
       minHeight: '100vh',
       overflow: 'hidden',
       position: 'relative',
-      backgroundImage: 'url("https://images.unsplash.com/photo-1536183922588-166604504d5e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1349&q=80")',
+      backgroundImage: 'url("https://images.unsplash.com/photo-1586775490184-b79f0621891f?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
     }}>
@@ -213,26 +217,44 @@ const ChatbotLogin = ({ onLogin }) => {
           width: '100%',
           maxWidth: '400px',
           height: '600px',
-          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          background: 'rgba(255, 255, 255, 0.8)',
           borderRadius: '20px',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+          boxShadow: '0 10px 30px rgba(0,0,0,0.2), 0 0 100px rgba(0,0,0,0.1)',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
           backdropFilter: 'blur(10px)',
           position: 'relative',
           zIndex: 1,
+          border: '1px solid rgba(255,255,255,0.3)',
         }}
       >
         <div style={{
-          background: 'linear-gradient(135deg, #1890ff, #40a9ff)',
+          background: 'linear-gradient(135deg, #6e8efb, #a777e3)',
           color: 'white',
           padding: '20px',
           textAlign: 'center',
           fontWeight: 'bold',
-          fontSize: '20px'
+          fontSize: '24px',
+          position: 'relative',
+          overflow: 'hidden',
         }}>
-          <Title level={3} style={{ color: 'white', marginBottom: 0 }}>AI Chatbot {isLogin ? 'Login' : 'Signup'}</Title>
+          <div style={{
+            position: 'absolute',
+            top: '-50%',
+            left: '-50%',
+            right: '-50%',
+            bottom: '-50%',
+            background: 'radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%)',
+            animation: 'pulse 5s infinite',
+          }} />
+          <RobotOutlined style={{ fontSize: '36px', marginBottom: '10px' }} />
+          <Title level={3} style={{ color: 'white', marginBottom: 0, position: 'relative' }}>
+            {isLogin ? "Aaraa.Ai Design Studio" : "AI for everyone, designed by You!"}
+          </Title>
+          <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: '14px', position: 'relative' }}>
+            {isLogin ? "AI for everyone, designed by You!" : "Create your account and chat with the future"}
+          </Text>
         </div>
         <div style={{
           flex: 1,
@@ -241,7 +263,17 @@ const ChatbotLogin = ({ onLogin }) => {
           display: 'flex',
           flexDirection: 'column',
           backgroundImage: 'linear-gradient(to bottom, rgba(230, 247, 255, 0.8), rgba(240, 240, 240, 0.8))',
+          position: 'relative',
         }}>
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundImage: 'url("data:image/svg+xml,%3Csvg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="%239C92AC" fill-opacity="0.1" fill-rule="evenodd"%3E%3Ccircle cx="3" cy="3" r="3"/%3E%3Ccircle cx="13" cy="13" r="3"/%3E%3C/g%3E%3C/svg%3E")',
+            opacity: 0.5,
+          }} />
           <AnimatePresence>
             {messages.map((msg, index) => (
               <motion.div
@@ -258,6 +290,9 @@ const ChatbotLogin = ({ onLogin }) => {
                   marginBottom: '12px',
                   maxWidth: '70%',
                   fontSize: '16px',
+                  boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+                  position: 'relative',
+                  zIndex: 1,
                 }}
               >
                 {msg.text}
