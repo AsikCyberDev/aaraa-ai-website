@@ -2,28 +2,38 @@ import {
   BarChartOutlined,
   DashboardOutlined,
   LogoutOutlined,
+  ProjectOutlined,
   RobotOutlined,
   UploadOutlined,
   UserOutlined
 } from '@ant-design/icons';
 import { Avatar, Dropdown, Layout, Menu, message } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const { Header } = Layout;
 
-const Navbar = ({ onCollapse, collapsed }) => {
+const Navbar = ({ onLogout }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedKeys, setSelectedKeys] = useState([getCurrentMenuKey(location.pathname)]);
+  const [userName, setUserName] = useState('');
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user && user.name) {
+      setUserName(user.name);
+    }
+  }, []);
 
   function getCurrentMenuKey(pathname) {
     const pathToKey = {
       '/dashboard': '1',
-      '/chatbots': '2',
-      '/upload': '3',
-      '/analytics': '4',
-      '/profile': '5',
+      '/projects': '2',
+      '/chatbots': '3',
+      '/upload': '4',
+      '/analytics': '5',
+      '/profile': '6',
     };
     return pathToKey[pathname] || '1';
   }
@@ -35,15 +45,18 @@ const Navbar = ({ onCollapse, collapsed }) => {
         navigate('/dashboard');
         break;
       case '2':
-        navigate('/chatbots');
+        navigate('/projects');
         break;
       case '3':
-        navigate('/upload');
+        navigate('/chatbots');
         break;
       case '4':
-        navigate('/analytics');
+        navigate('/upload');
         break;
       case '5':
+        navigate('/analytics');
+        break;
+      case '6':
         navigate('/profile');
         break;
       default:
@@ -52,9 +65,12 @@ const Navbar = ({ onCollapse, collapsed }) => {
   };
 
   const handleLogout = () => {
-    // Implement logout logic here
-    message.success('Logged out successfully');
-    navigate('/');
+    if (typeof onLogout === 'function') {
+      onLogout();
+      message.success('Logged out successfully');
+    } else {
+      console.error('onLogout is not a function');
+    }
   };
 
   const userMenu = (
@@ -70,31 +86,35 @@ const Navbar = ({ onCollapse, collapsed }) => {
   );
 
   return (
-    <Header className="header">
-      <div className="logo" />
-      <Menu theme="dark" mode="horizontal" selectedKeys={selectedKeys} onClick={handleMenuClick}>
+    <Header className="header" style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <div className="logo" style={{ width: '120px', height: '31px', background: 'rgba(255, 255, 255, 0.2)', margin: '16px 24px 16px 0' }} />
+      <Menu theme="dark" mode="horizontal" selectedKeys={selectedKeys} onClick={handleMenuClick} style={{ flex: 1 }}>
         <Menu.Item key="1" icon={<DashboardOutlined />}>
           Dashboard
         </Menu.Item>
-        <Menu.Item key="2" icon={<RobotOutlined />}>
+        <Menu.Item key="2" icon={<ProjectOutlined />}>
+          Projects
+        </Menu.Item>
+        <Menu.Item key="3" icon={<RobotOutlined />}>
           My Chatbots
         </Menu.Item>
-        <Menu.Item key="3" icon={<UploadOutlined />}>
+        <Menu.Item key="4" icon={<UploadOutlined />}>
           Upload Documents
         </Menu.Item>
-        <Menu.Item key="4" icon={<BarChartOutlined />}>
+        <Menu.Item key="5" icon={<BarChartOutlined />}>
           Analytics
         </Menu.Item>
       </Menu>
-      <div className="user-menu">
+      <div className="user-menu" style={{ marginLeft: '15px' }}>
         <Dropdown overlay={userMenu} trigger={['click']}>
           <button
             className="ant-dropdown-link"
             onClick={(e) => e.preventDefault()}
             aria-label="User menu"
+            style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}
           >
-            <Avatar icon={<UserOutlined />} />
-            <span>John Doe</span>
+            <Avatar icon={<UserOutlined />} style={{ marginRight: '8px' }} />
+            <span>{userName || 'User'}</span>
           </button>
         </Dropdown>
       </div>

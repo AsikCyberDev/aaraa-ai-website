@@ -1,33 +1,51 @@
 import { Layout } from 'antd';
-
-import 'devextreme/dist/css/dx.light.css';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import ChatbotLogin from './components/ChatbotLogin';
 import Dashboard from './components/Dashboard';
-import Login from './components/Login';
-import './styles.css';
+import Navbar from './components/Navbar';
 
-function App() {
+const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsAuthenticated(!!token);
+  }, []);
 
   const handleLogin = () => {
     setIsAuthenticated(true);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setIsAuthenticated(false);
+  };
+
   return (
     <Router>
-      <Layout className="layout">
-        <Routes>
-          <Route path="/login" element={
-            isAuthenticated ? <Navigate to="/dashboard" /> : <Login onLogin={handleLogin} />
-          } />
-          <Route path="/*" element={
-            isAuthenticated ? <Dashboard /> : <Navigate to="/login" />
-          } />
-        </Routes>
+      <Layout style={{ minHeight: '100vh' }}>
+        {isAuthenticated && <Navbar onLogout={handleLogout} />}
+        <Layout.Content>
+          <Routes>
+            <Route
+              path="/login"
+              element={
+                isAuthenticated
+                  ? <Navigate to="/dashboard" replace />
+                  : <ChatbotLogin onLogin={handleLogin} />
+              }
+            />
+            <Route
+              path="/*"
+              element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" replace />}
+            />
+          </Routes>
+        </Layout.Content>
       </Layout>
     </Router>
   );
-}
+};
 
 export default App;
