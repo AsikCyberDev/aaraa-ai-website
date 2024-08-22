@@ -3,8 +3,9 @@ import 'antd/dist/reset.css';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import './index.css';
+import { ThemeProvider } from './ThemeProvider'; // Adjust the path as needed
 import reportWebVitals from './reportWebVitals';
+import './styles/global.css';
 
 // Create an Apollo Client instance
 const client = new ApolloClient({
@@ -16,7 +17,9 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <ApolloProvider client={client}>
+      <ThemeProvider>
       <App />
+      </ThemeProvider>
     </ApolloProvider>
   </React.StrictMode>
 );

@@ -1,17 +1,19 @@
 import {
   LoadingOutlined,
-  LockOutlined, MailOutlined, PhoneOutlined,
-  RobotOutlined, SendOutlined,
-  UserOutlined
+  LockOutlined,
+  MailOutlined,
+  PhoneOutlined,
+  SendOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
 import { useMutation } from '@apollo/client';
-import { Button, Input, Select, Switch, Tooltip, Typography, message } from 'antd';
+import { Button, Input, Select, Switch, Typography, message } from 'antd';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useRef, useState } from 'react';
-import { FaFacebook, FaGithub, FaGoogle } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import Particles from 'react-tsparticles';
 import { SIGNIN_MUTATION, SIGNUP_MUTATION } from '../graphql/queries';
-import './ChatbotLogin.css';
+import ThemeToggle from './ThemeToggle';
 import { isAuthenticated } from './authUtils';
 import countryCodes from './countryCodes';
 
@@ -47,7 +49,10 @@ const ChatbotLogin = ({ onLogin }) => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
       if (!isAuthenticated()) {
-        addMessage('Welcome to the Aaraa.Ai Chatbot Studio! Please enter your email to get started.', 'bot');
+        addMessage(
+          'Welcome to the Aaraa.Ai Chatbot Studio! Please enter your email to get started.',
+          'bot'
+        );
       } else {
         onLogin();
       }
@@ -59,7 +64,7 @@ const ChatbotLogin = ({ onLogin }) => {
   }, [currentField]);
 
   const addMessage = (text, sender) => {
-    setMessages(prev => [...prev, { text, sender }]);
+    setMessages((prev) => [...prev, { text, sender }]);
   };
 
   const validateEmail = (email) => {
@@ -79,10 +84,12 @@ const ChatbotLogin = ({ onLogin }) => {
           addMessage('Please enter a valid email address.', 'bot');
           return;
         }
-        addMessage(currentField === 'password' ? '*'.repeat(inputValue.length) : inputValue, 'user');
+        addMessage(
+          currentField === 'password' ? '*'.repeat(inputValue.length) : inputValue,
+          'user'
+        );
         handleLoginInput();
       } else {
-        // Signup logic remains the same
         if (currentField === 'email' && !validateEmail(inputValue)) {
           addMessage('Please enter a valid email address.', 'bot');
           return;
@@ -91,7 +98,10 @@ const ChatbotLogin = ({ onLogin }) => {
           addMessage('Please enter a valid 10-digit mobile number.', 'bot');
           return;
         }
-        addMessage(currentField === 'password' ? '*'.repeat(inputValue.length) : inputValue, 'user');
+        addMessage(
+          currentField === 'password' ? '*'.repeat(inputValue.length) : inputValue,
+          'user'
+        );
         handleSignupInput();
       }
     }
@@ -100,25 +110,25 @@ const ChatbotLogin = ({ onLogin }) => {
   const handleSignupInput = () => {
     switch (currentField) {
       case 'name':
-        setSignupData(prev => ({ ...prev, name: inputValue }));
+        setSignupData((prev) => ({ ...prev, name: inputValue }));
         setCurrentField('email');
         addMessage('Please enter your email:', 'bot');
         setInputValue('');
         break;
       case 'email':
-        setSignupData(prev => ({ ...prev, email: inputValue }));
+        setSignupData((prev) => ({ ...prev, email: inputValue }));
         setCurrentField('mobile');
         addMessage('Please enter your mobile number:', 'bot');
         setInputValue('');
         break;
       case 'mobile':
-        setSignupData(prev => ({ ...prev, mobile: inputValue }));
+        setSignupData((prev) => ({ ...prev, mobile: inputValue }));
         setCurrentField('password');
         addMessage('Please enter your password:', 'bot');
         setInputValue('');
         break;
       case 'password':
-        setSignupData(prev => ({ ...prev, password: inputValue }));
+        setSignupData((prev) => ({ ...prev, password: inputValue }));
         signup();
         break;
       default:
@@ -132,13 +142,11 @@ const ChatbotLogin = ({ onLogin }) => {
 
   const handleLoginInput = () => {
     if (currentField === 'email') {
-      setLoginData(prev => ({ ...prev, email: inputValue }));
+      setLoginData((prev) => ({ ...prev, email: inputValue }));
       setCurrentField('password');
       addMessage('Please enter your password:', 'bot');
       setInputValue('');
     } else if (currentField === 'password') {
-      // Instead of updating state and then calling login,
-      // we'll call login directly with the current data
       login(loginData.email, inputValue);
     }
   };
@@ -158,16 +166,16 @@ const ChatbotLogin = ({ onLogin }) => {
         variables: {
           input: {
             email: email,
-            password: password
-          }
-        }
+            password: password,
+          },
+        },
       });
       if (data.signIn && data.signIn.token) {
         localStorage.setItem('token', data.signIn.token);
         const userDetails = {
           id: data.signIn.id,
           name: data.signIn.name,
-          email: data.signIn.email
+          email: data.signIn.email,
         };
         localStorage.setItem('user', JSON.stringify(userDetails));
         addMessage(`Login successful! Welcome back, ${data.signIn.name}.`, 'bot');
@@ -203,10 +211,8 @@ const ChatbotLogin = ({ onLogin }) => {
             email: signupData.email,
             mobile: signupData.countryCode + signupData.mobile,
             password: signupData.password,
-            sex: 'male_female',
-            address: 'address',
-          }
-        }
+          },
+        },
       });
 
       if (data && data.signUp) {
@@ -231,35 +237,106 @@ const ChatbotLogin = ({ onLogin }) => {
     }
   };
 
-  // const socialLogin = (platform) => {
-  //   const icon = platform === 'Google' ? <FaGoogle /> : platform === 'Facebook' ? <FaFacebook /> : <FaGithub />;
-  //   addMessage(`Logging in with ${platform} ${icon}`, 'user');
-  //   setIsLoading(true);
-  //   // Implement actual social login logic here
-  //   setTimeout(() => {
-  //     addMessage(`Login with ${platform} successful! Welcome to the Aaraa.Ai Chatbot Studio.`, 'bot');
-  //     message.success(`Login with ${platform} successful!`);
-  //     setIsLoading(false);
-  //     onLogin();
-  //   }, 1500);
-  // };
-
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  const socialButtonText = isLogin ? "Log in with" : "Sign up with";
+
   return (
     <div className="chatbot-login-container">
+      <Particles id="tsparticles" />
       <div className="content-wrapper">
+        <div className="login-container">
+          <div className="login-toggle">
+            <ThemeToggle />
+            <Switch
+              checkedChildren="Login"
+              unCheckedChildren="Signup"
+              checked={isLogin}
+              onChange={(checked) => {
+                setIsLogin(checked);
+                setCurrentField(checked ? 'email' : 'name');
+                setMessages([]);
+                addMessage(
+                  `Please enter your ${checked ? 'email' : 'name'} to ${checked ? 'log in' : 'sign up'
+                  }.`,
+                  'bot'
+                );
+              }}
+            />
+          </div>
+          <div className="login-box">
+            <Title level={2} className="title-text">
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                {isLogin ? 'Welcome Back!' : 'Join Us Today'}
+              </motion.div>
+            </Title>
+            <Paragraph className="paragraph-text">
+              {isLogin
+                ? 'Log in to access your personalized AI assistant and explore a world of possibilities.'
+                : 'Sign up to create your own AI assistant and start your journey into the future of technology.'}
+            </Paragraph>
+            <Text className="text">{socialButtonText}</Text>
+            <div className="social-buttons">
+              <Button
+                className="social-button google"
+                onClick={() => console.log("Google login")}
+              >
+                <img src="google-icon.png" alt="Google icon" />
+                {socialButtonText} Google
+              </Button>
+              <Button
+                className="social-button facebook"
+                onClick={() => console.log("Facebook login")}
+              >
+                <img src="facebook-icon.png" alt="Facebook icon" />
+                {socialButtonText} Facebook
+              </Button>
+              <Button
+                className="social-button github"
+                onClick={() => console.log("GitHub login")}
+              >
+                <img src="github-icon.png" alt="GitHub icon" />
+                {socialButtonText} GitHub
+              </Button>
+            </div>
+          </div>
+          <div className="features">
+            <Title level={4}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                Why Choose Our AI Assistant?
+              </motion.div>
+            </Title>
+            <ul>
+              <li>Personalized experience tailored to your needs</li>
+              <li>24/7 availability for all your queries</li>
+              <li>Continuous learning and improvement</li>
+              <li>Seamless integration with your daily tasks</li>
+            </ul>
+          </div>
+        </div>
         <div className="chatbot-container">
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.5 }}
             className="chatbot-window"
           >
             <div className="chatbot-header">
-              <RobotOutlined className="chatbot-icon" />
+              <motion.div
+                animate={{ rotate: [0, 20, -20, 0] }}
+                transition={{ repeat: Infinity, duration: 2 }}
+              >
+              </motion.div>
               <Title level={4}>Aaraa.Ai Chatbot Studio</Title>
               <Text className="tagline">AI for everyone, designed by You!</Text>
             </div>
@@ -275,7 +352,7 @@ const ChatbotLogin = ({ onLogin }) => {
                     transition={{ duration: 0.3 }}
                     className={`message ${msg.sender}`}
                   >
-                    {typeof msg.text === 'string' ? msg.text : msg.text}
+                    {msg.text}
                   </motion.div>
                 ))}
                 <div ref={messagesEndRef} />
@@ -286,19 +363,27 @@ const ChatbotLogin = ({ onLogin }) => {
               <Input
                 ref={inputRef}
                 placeholder={
-                  currentField === 'name' ? 'Enter your name' :
-                    currentField === 'mobile' ? 'Enter your mobile number' :
-                      currentField === 'email' ? 'Enter your email' :
-                        currentField === 'password' ? 'Enter your password' :
-                          'Type your message...'
+                  currentField === 'name'
+                    ? 'Enter your name'
+                    : currentField === 'mobile'
+                      ? 'Enter your mobile number'
+                      : currentField === 'email'
+                        ? 'Enter your email'
+                        : currentField === 'password'
+                          ? 'Enter your password'
+                          : 'Type your message...'
                 }
                 type={currentField === 'password' ? 'password' : 'text'}
                 prefix={
-                  currentField === 'name' ? <UserOutlined /> :
-                    currentField === 'mobile' ? <PhoneOutlined /> :
-                      currentField === 'email' ? <MailOutlined /> :
-                        currentField === 'password' ? <LockOutlined /> :
-                          null
+                  currentField === 'name' ? (
+                    <UserOutlined />
+                  ) : currentField === 'mobile' ? (
+                    <PhoneOutlined />
+                  ) : currentField === 'email' ? (
+                    <MailOutlined />
+                  ) : currentField === 'password' ? (
+                    <LockOutlined />
+                  ) : null
                 }
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
@@ -309,13 +394,17 @@ const ChatbotLogin = ({ onLogin }) => {
                     <Select
                       value={signupData.countryCode}
                       style={{ width: 100 }}
-                      onChange={(value) => setSignupData(prev => ({ ...prev, countryCode: value }))}
+                      onChange={(value) =>
+                        setSignupData((prev) => ({ ...prev, countryCode: value }))
+                      }
                       showSearch
                       optionFilterProp="children"
                     >
                       {countryCodes.map((country) => (
                         <Option key={country.code} value={country.dial_code}>
-                          <span role="img" aria-label={country.name}>{country.emoji}</span>
+                          <span role="img" aria-label={country.name}>
+                            {country.emoji}
+                          </span>
                           {country.dial_code}
                         </Option>
                       ))}
@@ -332,60 +421,6 @@ const ChatbotLogin = ({ onLogin }) => {
               />
             </div>
           </motion.div>
-        </div>
-
-        <div className="login-container">
-          <div className="login-box">
-            <Title level={2}>{isLogin ? "Welcome Back!" : "Join Us Today"}</Title>
-            <Paragraph>
-              {isLogin
-                ? "Log in to access your personalized AI assistant and explore a world of possibilities."
-                : "Sign up to create your own AI assistant and start your journey into the future of technology."}
-            </Paragraph>
-            <div className="login-toggle">
-              <Switch
-                checkedChildren="Login"
-                unCheckedChildren="Signup"
-                checked={isLogin}
-                onChange={(checked) => {
-                  setIsLogin(checked);
-                  setCurrentField(checked ? 'email' : 'name');
-                  setMessages([]);
-                  addMessage(`Please enter your ${checked ? 'email' : 'name'} to ${checked ? 'log in' : 'sign up'}.`, 'bot');
-                }}
-              />
-            </div>
-            <div className="social-login">
-              <Text>{isLogin ? "Log in" : "Sign up"} with:</Text>
-              <div className="social-buttons">
-                {[
-                  { platform: 'Google', icon: <FaGoogle /> },
-                  { platform: 'Facebook', icon: <FaFacebook /> },
-                  { platform: 'GitHub', icon: <FaGithub /> }
-                ].map(({ platform, icon }) => (
-                  <Tooltip title="This feature is coming soon" key={platform}>
-                    <Button
-                      icon={icon}
-                      disabled
-                      className="social-button"
-                    >
-                      {platform}
-                      <span className="coming-soon-label">Coming Soon</span>
-                    </Button>
-                  </Tooltip>
-                ))}
-              </div>
-            </div>
-          </div>
-          <div className="features">
-            <Title level={4}>Why Choose Our AI Assistant?</Title>
-            <ul>
-              <li>Personalized experience tailored to your needs</li>
-              <li>24/7 availability for all your queries</li>
-              <li>Continuous learning and improvement</li>
-              <li>Seamless integration with your daily tasks</li>
-            </ul>
-          </div>
         </div>
       </div>
     </div>
