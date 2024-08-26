@@ -1,6 +1,6 @@
 import { Layout } from 'antd';
 import React from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import Analytics from './Analytics';
 import MyChatbots from './MyChatbots';
 import Profile from './Profile';
@@ -19,8 +19,7 @@ function Dashboard() {
         <Route path="/chatbots" element={<MyChatbots />} />
         <Route path="/upload" element={<UploadDocuments />} />
         <Route path="/analytics" element={<Analytics />} />
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/" element={<Profile />} />
       </Routes>
     </Content>
   );

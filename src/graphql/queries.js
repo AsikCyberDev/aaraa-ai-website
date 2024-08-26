@@ -53,18 +53,18 @@ export const GET_USER = gql`
   }
 `;
 
-// Project Queries
-export const GET_PROJECTS = gql`
-  query GetProjects($userId: ID!) {
-    projects(userId: $userId) {
-      id
-      name
-      description
-      userId
-      created
-    }
-  }
-`;
+// // Project Queries
+// export const GET_PROJECTS = gql`
+//   query GetProjects($userId: ID!) {
+//     projects(userId: $userId) {
+//       id
+//       name
+//       description
+//       userId
+//       created
+//     }
+//   }
+// `;
 
 export const GET_PROJECT = gql`
   query GetProject($id: ID!, $userId: ID!) {
@@ -108,20 +108,20 @@ export const DELETE_PROJECT = gql`
   }
 `;
 
-// Document Queries
-export const GET_DOCUMENTS_BY_PROJECT = gql`
-  query GetDocumentsByProject($projectId: ID!) {
-    documentsByProject(projectId: $projectId) {
-      id
-      name
-      size
-      uploadDate
-      chatbotId
-      projectId
-      s3Url
-    }
-  }
-`;
+// // Document Queries
+// export const GET_DOCUMENTS_BY_PROJECT = gql`
+//   query GetDocumentsByProject($projectId: ID!) {
+//     documentsByProject(projectId: $projectId) {
+//       id
+//       name
+//       size
+//       uploadDate
+//       chatbotId
+//       projectId
+//       s3Url
+//     }
+//   }
+// `;
 
 export const GET_DOCUMENTS_BY_CHATBOT = gql`
   query GetDocumentsByChatbot($chatbotId: ID!) {
@@ -151,39 +151,39 @@ export const GET_DOCUMENT = gql`
   }
 `;
 
-export const CREATE_DOCUMENT = gql`
-  mutation CreateDocument($input: CreateDocumentInput!) {
-    createDocument(input: $input) {
-      id
-      name
-      size
-      uploadDate
-      chatbotId
-      projectId
-      s3Url
-    }
-  }
-`;
+// export const CREATE_DOCUMENT = gql`
+//   mutation CreateDocument($input: CreateDocumentInput!) {
+//     createDocument(input: $input) {
+//       id
+//       name
+//       size
+//       uploadDate
+//       chatbotId
+//       projectId
+//       s3Url
+//     }
+//   }
+// `;
 
-export const UPDATE_DOCUMENT = gql`
-  mutation UpdateDocument($id: ID!, $name: String) {
-    updateDocument(id: $id, name: $name) {
-      id
-      name
-      size
-      uploadDate
-      chatbotId
-      projectId
-      s3Url
-    }
-  }
-`;
+// export const UPDATE_DOCUMENT = gql`
+//   mutation UpdateDocument($id: ID!, $name: String) {
+//     updateDocument(id: $id, name: $name) {
+//       id
+//       name
+//       size
+//       uploadDate
+//       chatbotId
+//       projectId
+//       s3Url
+//     }
+//   }
+// `;
 
-export const DELETE_DOCUMENT = gql`
-  mutation DeleteDocument($id: ID!) {
-    deleteDocument(id: $id)
-  }
-`;
+// export const DELETE_DOCUMENT = gql`
+//   mutation DeleteDocument($id: ID!) {
+//     deleteDocument(id: $id)
+//   }
+// `;
 
 // Chatbot Queries
 export const GET_CHATBOTS = gql`
@@ -347,5 +347,60 @@ export const GENERATE_API_KEY = gql`
 export const REVOKE_API_KEY = gql`
   mutation RevokeApiKey($chatbotId: ID!, $apiKeyId: ID!) {
     revokeApiKey(chatbotId: $chatbotId, apiKeyId: $apiKeyId)
+  }
+`;
+
+
+export const GET_PROJECTS = gql`
+  query GetProjects($userId: ID!) {
+    projects(userId: $userId) {
+      id
+      name
+    }
+  }
+`;
+
+export const GET_DOCUMENTS_BY_PROJECT = gql`
+  query GetDocumentsByProject($projectId: ID!) {
+    documentsByProject(projectId: $projectId) {
+      id
+      name
+      size
+      uploadDate
+      s3Url
+    }
+  }
+`;
+
+export const CREATE_DOCUMENT = gql`
+  mutation CreateDocument($input: CreateDocumentInput!) {
+    createDocument(input: $input) {
+      document {
+        id
+        name
+        size
+        uploadDate
+        s3Url
+      }
+      uploadUrl
+    }
+  }
+`;
+
+export const UPDATE_DOCUMENT = gql`
+  mutation UpdateDocument($id: ID!, $projectId: ID!, $name: String!) {
+    updateDocument(id: $id, projectId: $projectId, name: $name) {
+      id
+      name
+      size
+      uploadDate
+      s3Url
+    }
+  }
+`;
+
+export const DELETE_DOCUMENT = gql`
+  mutation DeleteDocument($id: ID!, $projectId: ID!) {
+    deleteDocument(id: $id, projectId: $projectId)
   }
 `;

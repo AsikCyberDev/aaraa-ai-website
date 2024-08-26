@@ -18,17 +18,20 @@ import {
   message
 } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ThemeToggle from './ThemeToggle';
 
 const { Header } = Layout;
 
-const Navbar = ({ onLogout, isAuthenticated, onLoginToggle }) => {
+const Navbar = ({ onLogout, isAuthenticated, onLoginToggle, currentPath }) => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const [selectedKeys, setSelectedKeys] = useState([getCurrentMenuKey(location.pathname)]);
+  const [selectedKeys, setSelectedKeys] = useState([getCurrentMenuKey(currentPath)]);
   const [userName, setUserName] = useState('');
   const [isLogin, setIsLogin] = useState(true);
+
+  useEffect(() => {
+    setSelectedKeys([getCurrentMenuKey(currentPath)]);
+  }, [currentPath]);
 
   useEffect(() => {
     if (isAuthenticated) {
