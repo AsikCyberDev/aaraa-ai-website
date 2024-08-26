@@ -57,7 +57,7 @@ const UploadDocuments = () => {
                 },
             });
 
-            const { uploadUrl, document } = data.createDocument;
+            const { uploadUrl } = data.createDocument;
 
             await fetch(uploadUrl, {
                 method: 'PUT',

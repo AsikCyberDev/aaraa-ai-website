@@ -598,28 +598,29 @@ body {
 
 /* Dark mode variables */
 .dark-mode {
-  --background-color: #001529;
-  --text-color: #ffffff;
-  --primary-color: #1890ff;
-  --secondary-color: #52c41a;
-  --header-text-color: #ffffff;
-  --layout-background-color: #141414;
-  --border-color: #434343;
-  --focus-color: #177ddc;
-  --button-background-color: #1f1f1f;
-  --button-hover-background-color: #2b2b2b;
-  --button-hover-border-color: #434343;
-  --input-background-color: #141414;
-  --scrollbar-track-color: #1f1f1f;
-  --scrollbar-thumb-color: #434343;
-  --scrollbar-thumb-hover-color: #262626;
-  --header-background-color: #096dd9;
-  --link-color: #177ddc;
-  --background-gradient-start: #001529;
-  --background-gradient-end: #00050a;
-  --cube-border-color: rgba(255, 255, 255, 0.1);
-  --cube-border-alt-color: rgba(255, 255, 255, 0.05);
+    --background-color: #141414; /* Darker base background for contrast */
+    --text-color: #e8e8e8; /* Softer white for text to reduce eye strain */
+    --primary-color: #177ddc; /* Slightly adjusted primary color for better contrast */
+    --secondary-color: #52c41a;
+    --header-text-color: #ffffff;
+    --layout-background-color: #1f1f1f; /* Consistent with updated dark theme */
+    --border-color: #434343; /* Standard dark mode border color */
+    --focus-color: #177ddc; /* Matches primary color for focus states */
+    --button-background-color: #262626; /* Slightly lighter for discernibility */
+    --button-hover-background-color: #3a3a3a; /* Differentiate hover state */
+    --button-hover-border-color: #434343; /* Consistent with border color */
+    --input-background-color: #1f1f1f; /* Matches layout background */
+    --scrollbar-track-color: #1f1f1f; /* Blends with layout background */
+    --scrollbar-thumb-color: #303030; /* Visible but not distracting */
+    --scrollbar-thumb-hover-color: #505050; /* Slightly lighter on hover */
+    --header-background-color: #1f1f1f; /* Consistent with layout background */
+    --link-color: #177ddc; /* Matches primary color for consistency */
+    --background-gradient-start: #1f1f1f; /* Start of gradient for subtle effect */
+    --background-gradient-end: #141414; /* End of gradient for subtle effect */
+    --cube-border-color: rgba(255, 255, 255, 0.1); /* Light border for cubes */
+    --cube-border-alt-color: rgba(255, 255, 255, 0.05); /* Even lighter alternate border */
 }
+
 
 .app-layout {
   min-height: 100vh;

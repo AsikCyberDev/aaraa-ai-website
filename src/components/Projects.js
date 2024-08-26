@@ -3,6 +3,7 @@ import { useMutation, useQuery } from '@apollo/client';
 import { Button, Card, Form, Input, Modal, Space, Table, message } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { CREATE_PROJECT, DELETE_PROJECT, GET_PROJECTS, UPDATE_PROJECT } from '../graphql/queries';
+import { useTheme } from '../ThemeProvider'; // Import the useTheme hook
 
 const Projects = ({ onSelectProject }) => {
     const [form] = Form.useForm();
@@ -18,6 +19,8 @@ const Projects = ({ onSelectProject }) => {
     const [createProject] = useMutation(CREATE_PROJECT);
     const [updateProject] = useMutation(UPDATE_PROJECT);
     const [deleteProject] = useMutation(DELETE_PROJECT);
+
+    useTheme(); // Use the hook to ensure the component re-renders on theme change
 
     useEffect(() => {
         if (error) {
@@ -136,8 +139,18 @@ const Projects = ({ onSelectProject }) => {
         <Card
             title="Projects"
             extra={<Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>New Project</Button>}
+            style={{ backgroundColor: `var(--background-color)`, color: `var(--text-color)` }} // Apply theme styles
         >
-            <Table columns={columns} dataSource={data?.projects} rowKey="id" loading={loading} />
+            <Table
+                columns={columns}
+                dataSource={data?.projects}
+                rowKey="id"
+                loading={loading}
+                style={{
+                    backgroundColor: 'var(--table-background-color)',
+                    color: 'var(--table-text-color)',
+                }}
+            />
             <Modal
                 title={editingProject ? "Edit Project" : "Create Project"}
                 visible={isModalVisible}

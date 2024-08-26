@@ -24,26 +24,26 @@ export const lightTheme = {
 };
 
 export const darkTheme = {
-    '--primary-color': '#1890ff',
-    '--background-color': '#1e1e1e',
-    '--text-color': '#ffffff',
+    '--primary-color': '#177ddc', // Slightly adjusted for better contrast
+    '--background-color': '#141414', // Darker background for better contrast
+    '--text-color': '#e8e8e8', // Softer white for text to reduce eye strain
     '--secondary-color': '#52c41a',
     '--header-text-color': '#ffffff',
-    '--border-color': '#444444',
-    '--focus-color': '#1890ff',
-    '--scrollbar-track-color': '#333333',
-    '--scrollbar-thumb-color': '#555555',
-    '--scrollbar-thumb-hover-color': '#777777',
-    '--layout-background-color': '#2b2b2b',
-    '--header-background-color': '#333333',
-    '--link-color': '#1890ff',
-    '--background-gradient-start': '#2b2b2b',
-    '--background-gradient-end': '#1e1e1e',
-    '--cube-border-color': '#1d1d1d',
+    '--border-color': '#434343',
+    '--focus-color': '#177ddc',
+    '--scrollbar-track-color': '#1f1f1f',
+    '--scrollbar-thumb-color': '#303030',
+    '--scrollbar-thumb-hover-color': '#505050',
+    '--layout-background-color': '#1f1f1f',
+    '--header-background-color': '#1f1f1f',
+    '--link-color': '#177ddc', // Matches primary color for consistency
+    '--background-gradient-start': '#1f1f1f',
+    '--background-gradient-end': '#141414',
+    '--cube-border-color': '#303030',
     '--cube-border-alt-color': '#52c41a',
-    '--button-background-color': '#333333',
-    '--button-border-color': '#555555',
-    '--button-hover-background-color': '#444444',
-    '--button-hover-border-color': '#1890ff',
-    '--heading-text-color': '#ffffff', /* New addition for headings */
+    '--button-background-color': '#262626',
+    '--button-border-color': '#434343',
+    '--button-hover-background-color': '#3a3a3a',
+    '--button-hover-border-color': '#177ddc',
+    '--heading-text-color': '#e8e8e8', // Softer white for headings
 };
