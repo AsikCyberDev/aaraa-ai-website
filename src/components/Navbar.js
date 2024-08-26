@@ -195,14 +195,7 @@ const Navbar = ({ onLogout, isAuthenticated, onLoginToggle, currentPath }) => {
             <Menu.Item key="4" icon={<UploadOutlined />} style={menuItemStyle}>Upload Documents</Menu.Item>
             <Menu.Item key="5" icon={<BarChartOutlined />} style={menuItemStyle}>Analytics</Menu.Item>
           </>
-        ) : (
-          <>
-            <Menu.Item key="features" style={menuItemStyle}>Features</Menu.Item>
-            <Menu.Item key="pricing" style={menuItemStyle}>Pricing</Menu.Item>
-            <Menu.Item key="about" style={menuItemStyle}>About Us</Menu.Item>
-            <Menu.Item key="contact" style={menuItemStyle}>Contact</Menu.Item>
-          </>
-        )}
+        ) : null}
       </Menu>
       <div style={rightSectionStyle}>
         <Dropdown overlay={settingsMenu} trigger={['click']}>
