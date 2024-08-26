@@ -1,3 +1,19 @@
+import React, { useEffect, useRef, useState } from 'react';
+import { useMutation } from '@apollo/client';
+import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import Particles from 'react-tsparticles';
+import {
+  Button,
+  Card,
+  Col,
+  Input,
+  Row,
+  Select,
+  Switch,
+  Typography,
+  message
+} from 'antd';
 import {
   FacebookFilled,
   GithubOutlined,
@@ -7,14 +23,8 @@ import {
   MailOutlined,
   PhoneOutlined,
   SendOutlined,
-  UserOutlined,
+  UserOutlined
 } from '@ant-design/icons';
-import { useMutation } from '@apollo/client';
-import { Button, Input, Select, Switch, Typography, message } from 'antd';
-import { AnimatePresence, motion } from 'framer-motion';
-import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Particles from 'react-tsparticles';
 import { SIGNIN_MUTATION, SIGNUP_MUTATION } from '../graphql/queries';
 import ThemeToggle from './ThemeToggle';
 import { isAuthenticated } from './authUtils';
@@ -249,27 +259,26 @@ const ChatbotLogin = ({ onLogin }) => {
   return (
     <div className="chatbot-login-container">
       <Particles id="tsparticles" />
-      <div className="content-wrapper">
-        <div className="login-container">
-          <div className="login-toggle">
-            <ThemeToggle />
-            <Switch
-              checkedChildren="Login"
-              unCheckedChildren="Signup"
-              checked={isLogin}
-              onChange={(checked) => {
-                setIsLogin(checked);
-                setCurrentField(checked ? 'email' : 'name');
-                setMessages([]);
-                addMessage(
-                  `Please enter your ${checked ? 'email' : 'name'} to ${checked ? 'log in' : 'sign up'
-                  }.`,
-                  'bot'
-                );
-              }}
-            />
-          </div>
-          <div className="login-box">
+      <Row gutter={24} justify="center" align="middle" style={{ minHeight: '100vh' }}>
+        <Col xs={24} md={12} lg={10}>
+          <Card className="login-card">
+            <div className="login-toggle">
+              <ThemeToggle />
+              <Switch
+                checkedChildren="Login"
+                unCheckedChildren="Signup"
+                checked={isLogin}
+                onChange={(checked) => {
+                  setIsLogin(checked);
+                  setCurrentField(checked ? 'email' : 'name');
+                  setMessages([]);
+                  addMessage(
+                    `Please enter your ${checked ? 'email' : 'name'} to ${checked ? 'log in' : 'sign up'}.`,
+                    'bot'
+                  );
+                }}
+              />
+            </div>
             <Title level={2} className="title-text">
               <motion.div
                 initial={{ opacity: 0, y: -20 }}
@@ -308,124 +317,113 @@ const ChatbotLogin = ({ onLogin }) => {
                 {socialButtonText} GitHub
               </Button>
             </div>
-          </div>
-          <div className="features">
-            <Title level={4}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                Why Choose Our AI Assistant?
-              </motion.div>
-            </Title>
-            <ul>
-              <li>Personalized experience tailored to your needs</li>
-              <li>24/7 availability for all your queries</li>
-              <li>Continuous learning and improvement</li>
-              <li>Seamless integration with your daily tasks</li>
-            </ul>
-          </div>
-        </div>
-        <div className="chatbot-container">
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="chatbot-window"
-          >
-            <div className="chatbot-header">
-              <motion.div
-                animate={{ rotate: [0, 20, -20, 0] }}
-                transition={{ repeat: Infinity, duration: 2 }}
-              >
-              </motion.div>
-              <Title level={4}>Aaraa.Ai Chatbot Studio</Title>
-              <Text className="tagline">AI for everyone, designed by You!</Text>
-            </div>
+            <Card className="features" size="small">
+              <Title level={4}>Why Choose Our AI Assistant?</Title>
+              <ul>
+                <li>Personalized experience tailored to your needs</li>
+                <li>24/7 availability for all your queries</li>
+                <li>Continuous learning and improvement</li>
+                <li>Seamless integration with your daily tasks</li>
+              </ul>
+            </Card>
+          </Card>
+        </Col>
+        <Col xs={24} md={12} lg={14}>
+          <Card className="chatbot-card">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="chatbot-window"
+            >
+              <div className="chatbot-header">
+                <Title level={4}>Aaraa.Ai Chatbot Studio</Title>
+                <Text className="tagline">AI for everyone, designed by You!</Text>
+              </div>
 
-            <div className="chat-messages">
-              <AnimatePresence>
-                {messages.map((msg, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.3 }}
-                    className={`message ${msg.sender}`}
-                  >
-                    {msg.text}
-                  </motion.div>
-                ))}
-                <div ref={messagesEndRef} />
-              </AnimatePresence>
-            </div>
-
-            <div className="input-area">
-              <Input
-                ref={inputRef}
-                placeholder={
-                  currentField === 'name'
-                    ? 'Enter your name'
-                    : currentField === 'mobile'
-                      ? 'Enter your mobile number'
-                      : currentField === 'email'
-                        ? 'Enter your email'
-                        : currentField === 'password'
-                          ? 'Enter your password'
-                          : 'Type your message...'
-                }
-                type={currentField === 'password' ? 'password' : 'text'}
-                prefix={
-                  currentField === 'name' ? (
-                    <UserOutlined />
-                  ) : currentField === 'mobile' ? (
-                    <PhoneOutlined />
-                  ) : currentField === 'email' ? (
-                    <MailOutlined />
-                  ) : currentField === 'password' ? (
-                    <LockOutlined />
-                  ) : null
-                }
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onPressEnter={onInputSubmit}
-                className="input-field"
-                addonBefore={
-                  currentField === 'mobile' ? (
-                    <Select
-                      value={signupData.countryCode}
-                      style={{ width: 100 }}
-                      onChange={(value) =>
-                        setSignupData((prev) => ({ ...prev, countryCode: value }))
-                      }
-                      showSearch
-                      optionFilterProp="children"
+              <div className="chat-messages">
+                <AnimatePresence>
+                  {messages.map((msg, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.3 }}
+                      className={`message ${msg.sender}`}
                     >
-                      {countryCodes.map((country) => (
-                        <Option key={country.code} value={country.dial_code}>
-                          <span role="img" aria-label={country.name}>
-                            {country.emoji}
-                          </span>
-                          {country.dial_code}
-                        </Option>
-                      ))}
-                    </Select>
-                  ) : null
-                }
-              />
-              <Button
-                type="primary"
-                icon={isLoading ? <LoadingOutlined /> : <SendOutlined />}
-                onClick={onInputSubmit}
-                disabled={isLoading}
-                className="send-button"
-              />
-            </div>
-          </motion.div>
-        </div>
-      </div>
+                      {msg.text}
+                    </motion.div>
+                  ))}
+                  <div ref={messagesEndRef} />
+                </AnimatePresence>
+              </div>
+
+              <div className="input-area">
+                <Input
+                  ref={inputRef}
+                  placeholder={
+                    currentField === 'name'
+                      ? 'Enter your name'
+                      : currentField === 'mobile'
+                        ? 'Enter your mobile number'
+                        : currentField === 'email'
+                          ? 'Enter your email'
+                          : currentField === 'password'
+                            ? 'Enter your password'
+                            : 'Type your message...'
+                  }
+                  type={currentField === 'password' ? 'password' : 'text'}
+                  prefix={
+                    currentField === 'name' ? (
+                      <UserOutlined />
+                    ) : currentField === 'mobile' ? (
+                      <PhoneOutlined />
+                    ) : currentField === 'email' ? (
+                      <MailOutlined />
+                    ) : currentField === 'password' ? (
+                      <LockOutlined />
+                    ) : null
+                  }
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onPressEnter={onInputSubmit}
+                  className="input-field"
+                  addonBefore={
+                    currentField === 'mobile' ? (
+                      <Select
+                        value={signupData.countryCode}
+                        style={{ width: 100 }}
+                        onChange={(value) =>
+                          setSignupData((prev) => ({ ...prev, countryCode: value }))
+                        }
+                        showSearch
+                        optionFilterProp="children"
+                      >
+                        {countryCodes.map((country) => (
+                          <Option key={country.code} value={country.dial_code}>
+                            <span role="img" aria-label={country.name}>
+                              {country.emoji}
+                            </span>
+                            {country.dial_code}
+                          </Option>
+                        ))}
+                      </Select>
+                    ) : null
+                  }
+                />
+                <Button
+                  type="primary"
+                  icon={isLoading ? <LoadingOutlined /> : <SendOutlined />}
+                  onClick={onInputSubmit}
+                  disabled={isLoading}
+                  className="send-button"
+                />
+              </div>
+            </motion.div>
+          </Card>
+        </Col>
+      </Row>
     </div>
   );
 };

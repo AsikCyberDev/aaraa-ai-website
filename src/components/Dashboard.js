@@ -11,7 +11,7 @@ const { Content } = Layout;
 
 function Dashboard() {
   return (
-    <Content className="site-content" style={{ padding: '24px' }}>
+    <Content className="dashboard-content">
       <Routes>
         <Route path="/dashboard" element={<Profile />} />
         <Route path="/profile" element={<Profile />} />

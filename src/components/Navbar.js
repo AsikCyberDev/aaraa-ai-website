@@ -13,18 +13,20 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const { Header } = Layout;
 
-const Navbar = ({ onLogout }) => {
+const Navbar = ({ onLogout, isAuthenticated }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedKeys, setSelectedKeys] = useState([getCurrentMenuKey(location.pathname)]);
   const [userName, setUserName] = useState('');
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user && user.name) {
-      setUserName(user.name);
+    if (isAuthenticated) {
+      const user = JSON.parse(localStorage.getItem('user'));
+      if (user && user.name) {
+        setUserName(user.name);
+      }
     }
-  }, []);
+  }, [isAuthenticated]);
 
   function getCurrentMenuKey(pathname) {
     const pathToKey = {
@@ -86,37 +88,45 @@ const Navbar = ({ onLogout }) => {
   );
 
   return (
-    <Header className="header" style={{ display: 'flex', justifyContent: 'space-between' }}>
-      <div className="logo" style={{ width: '120px', height: '31px', background: 'rgba(255, 255, 255, 0.2)', margin: '16px 24px 16px 0' }} />
-      <Menu theme="dark" mode="horizontal" selectedKeys={selectedKeys} onClick={handleMenuClick} style={{ flex: 1 }}>
-        <Menu.Item key="1" icon={<DashboardOutlined />}>
-          Dashboard
-        </Menu.Item>
-        <Menu.Item key="2" icon={<ProjectOutlined />}>
-          Projects
-        </Menu.Item>
-        <Menu.Item key="3" icon={<RobotOutlined />}>
-          My Chatbots
-        </Menu.Item>
-        <Menu.Item key="4" icon={<UploadOutlined />}>
-          Upload Documents
-        </Menu.Item>
-        <Menu.Item key="5" icon={<BarChartOutlined />}>
-          Analytics
-        </Menu.Item>
-      </Menu>
-      <div className="user-menu" style={{ marginLeft: '15px' }}>
-        <Dropdown overlay={userMenu} trigger={['click']}>
-          <button
-            className="ant-dropdown-link"
-            onClick={(e) => e.preventDefault()}
-            aria-label="User menu"
-            style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}
-          >
-            <Avatar icon={<UserOutlined />} style={{ marginRight: '8px' }} />
-            <span>{userName || 'User'}</span>
-          </button>
-        </Dropdown>
+    <Header className="header" style={{ padding: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'center', height: '100%', width: '100%' }}>
+        <div className="logo" style={{ width: '120px', height: '31px', background: 'rgba(255, 255, 255, 0.2)', margin: '16px 24px 16px 24px' }} />
+        {isAuthenticated && (
+          <>
+            <div style={{ flex: 1 }}>
+              <Menu theme="dark" mode="horizontal" selectedKeys={selectedKeys} onClick={handleMenuClick}>
+                <Menu.Item key="1" icon={<DashboardOutlined />}>
+                  Dashboard
+                </Menu.Item>
+                <Menu.Item key="2" icon={<ProjectOutlined />}>
+                  Projects
+                </Menu.Item>
+                <Menu.Item key="3" icon={<RobotOutlined />}>
+                  My Chatbots
+                </Menu.Item>
+                <Menu.Item key="4" icon={<UploadOutlined />}>
+                  Upload Documents
+                </Menu.Item>
+                <Menu.Item key="5" icon={<BarChartOutlined />}>
+                  Analytics
+                </Menu.Item>
+              </Menu>
+            </div>
+            <div className="user-menu" style={{ marginLeft: 'auto', marginRight: '24px' }}>
+              <Dropdown overlay={userMenu} trigger={['click']}>
+                <button
+                  className="ant-dropdown-link"
+                  onClick={(e) => e.preventDefault()}
+                  aria-label="User menu"
+                  style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}
+                >
+                  <Avatar icon={<UserOutlined />} style={{ marginRight: '8px' }} />
+                  <span>{userName || 'User'}</span>
+                </button>
+              </Dropdown>
+            </div>
+          </>
+        )}
       </div>
     </Header>
   );

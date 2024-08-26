@@ -25,9 +25,9 @@ const App = () => {
 
   return (
     <Router>
-      <Layout style={{ minHeight: '100vh' }}>
-        {isAuthenticated && <Navbar onLogout={handleLogout} />}
-        <Layout.Content>
+      <Layout className="app-layout">
+        <Navbar onLogout={handleLogout} isAuthenticated={isAuthenticated} />
+        <Layout.Content className="app-content">
           <Routes>
             <Route
               path="/login"
