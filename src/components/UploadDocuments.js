@@ -119,7 +119,7 @@ const UploadDocuments = () => {
                 variables: {
                     input: {
                         documentId: document.id,
-                        projectId: document.projectId,
+                        projectId: document.projectId, // Make sure this is available in your document object
                     },
                 },
             });

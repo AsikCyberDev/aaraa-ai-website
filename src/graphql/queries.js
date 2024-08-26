@@ -368,6 +368,7 @@ export const GET_DOCUMENTS_BY_PROJECT = gql`
       size
       uploadDate
       s3Url
+      projectId
     }
   }
 `;
