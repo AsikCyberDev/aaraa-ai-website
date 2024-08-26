@@ -4,14 +4,12 @@ import { Button, Card, Form, Input, Modal, Space, Table, message } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { CREATE_PROJECT, DELETE_PROJECT, GET_PROJECTS, UPDATE_PROJECT } from '../graphql/queries';
 
-
-const Projects = () => {
+const Projects = ({ onSelectProject }) => {
     const [form] = Form.useForm();
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [editingProject, setEditingProject] = useState(null);
 
     const userId = JSON.parse(localStorage.getItem('user')).id;
-
 
     const { loading, error, data, refetch } = useQuery(GET_PROJECTS, {
         variables: { userId },
@@ -57,6 +55,7 @@ const Projects = () => {
                 }
             });
             message.success('Project deleted successfully');
+            refetch();
         } catch (error) {
             message.error('Failed to delete project');
             console.error('Delete project error:', error);
@@ -126,6 +125,12 @@ const Projects = () => {
             ),
         },
     ];
+
+    useEffect(() => {
+        if (onSelectProject && data?.projects) {
+            onSelectProject(data.projects);
+        }
+    }, [data, onSelectProject]);
 
     return (
         <Card

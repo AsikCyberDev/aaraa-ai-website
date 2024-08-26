@@ -1,13 +1,13 @@
 import {
-  BookOutlined, CheckCircleOutlined, ControlOutlined,
-  DeleteOutlined, EditOutlined, InfoCircleOutlined,
-  PlusOutlined, SettingOutlined, SkinOutlined
+    BookOutlined, CheckCircleOutlined, ControlOutlined,
+    DeleteOutlined, EditOutlined, InfoCircleOutlined,
+    PlusOutlined, SettingOutlined, SkinOutlined
 } from '@ant-design/icons';
 import { useMutation, useQuery } from '@apollo/client';
 import {
-  Button, ColorPicker, Descriptions, Form, Input, InputNumber,
-  Modal, Radio, Select, Slider, Steps, Switch, Table, Tag,
-  Tooltip, Typography, message
+    Button, ColorPicker, Descriptions, Form, Input, InputNumber,
+    Modal, Radio, Select, Slider, Steps, Switch, Table, Tag,
+    Tooltip, Typography, message
 } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { CREATE_CHATBOT, DELETE_CHATBOT, GET_CHATBOTS, GET_PROJECTS, UPDATE_CHATBOT } from '../graphql/queries';
@@ -29,11 +29,9 @@ const MyChatbots = () => {
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [editingChatbot, setEditingChatbot] = useState(null);
 
-  const userId = JSON.parse(localStorage.getItem('user')).id;
-
   const { loading, error, data, refetch } = useQuery(GET_CHATBOTS);
-  const { data: projectsData, loading: projectsLoading, error: projectsError } = useQuery(GET_PROJECTS, {
-    variables: { userId },
+  const { data: projectsData } = useQuery(GET_PROJECTS, {
+    variables: { userId: localStorage.getItem('userId') },
   });
   const [createChatbot] = useMutation(CREATE_CHATBOT);
   const [updateChatbot] = useMutation(UPDATE_CHATBOT);
@@ -43,10 +41,7 @@ const MyChatbots = () => {
     if (error) {
       message.error('Failed to load chatbots');
     }
-    if (projectsError) {
-      message.error('Failed to load projects');
-    }
-  }, [error, projectsError]);
+  }, [error]);
 
   const showModal = (chatbot = null) => {
     setIsModalVisible(true);
@@ -83,17 +78,17 @@ const MyChatbots = () => {
         language: formData.language,
         theme: formData.theme,
         primaryColor: {
-          cleared: false,  // or true depending on your application's logic
+          cleared: false,
           metaColor: {
-            isValid: true,  // Assuming the color picked is valid
-            r: parseInt(formData.primaryColor.slice(1, 3), 16),  // Red component
-            g: parseInt(formData.primaryColor.slice(3, 5), 16),  // Green component
-            b: parseInt(formData.primaryColor.slice(5, 7), 16),  // Blue component
-            a: 1,  // Alpha component, assuming fully opaque
-            _h: 0,  // Hue, set to default or calculate based on color
-            _s: 0,  // Saturation, set to default or calculate based on color
-            _v: 0,  // Value (brightness), set to default or calculate based on color
-          },
+            isValid: true,
+            r: parseInt(formData.primaryColor.slice(1, 3), 16),
+            g: parseInt(formData.primaryColor.slice(3, 5), 16),
+            b: parseInt(formData.primaryColor.slice(5, 7), 16),
+            a: 1,
+            _h: 0,
+            _s: 0,
+            _v: 0
+          }
         },
         fontSelection: formData.fontSelection,
         welcomeMessage: formData.welcomeMessage,
@@ -108,7 +103,7 @@ const MyChatbots = () => {
         enableHumanHandoff: formData.enableHumanHandoff,
         handoffThreshold: formData.handoffThreshold,
         enableAnalytics: formData.enableAnalytics,
-        sessionTimeout: formData.sessionTimeout,
+        sessionTimeout: formData.sessionTimeout
       };
 
       if (editingChatbot) {
@@ -224,18 +219,10 @@ const MyChatbots = () => {
       content: (
         <Form {...formItemLayout} initialValues={formData}>
           <Form.Item label="Project" name="projectId" rules={[{ required: true }]}>
-            <Select
-              onChange={(value) => setSelectedProjectId(value)}
-              loading={projectsLoading}
-              placeholder={projectsLoading ? "Loading projects..." : "Select a project"}
-            >
-              {projectsData?.projects.length > 0 ? (
-                projectsData.projects.map(project => (
-                  <Option key={project.id} value={project.id}>{project.name}</Option>
-                ))
-              ) : (
-                <Option disabled>No projects available</Option>
-              )}
+            <Select onChange={(value) => setSelectedProjectId(value)}>
+              {projectsData?.projects.map(project => (
+                <Option key={project.id} value={project.id}>{project.name}</Option>
+              ))}
             </Select>
           </Form.Item>
           <Form.Item label="Chatbot Name" name="name" rules={[{ required: true }]}>

@@ -1,10 +1,11 @@
 import { LoadingOutlined, SendOutlined } from '@ant-design/icons';
-import { Button, Input, Select, Typography } from 'antd';
+import { Button, Input, InputNumber, Radio, Select, Slider, Switch, Typography } from 'antd';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useRef, useState } from 'react';
 
 const { Option } = Select;
 const { Title, Text } = Typography;
+const { TextArea } = Input;
 
 const Chatbot = ({ initialField, fields, onSubmit }) => {
     const [currentField, setCurrentField] = useState(initialField);
@@ -17,7 +18,7 @@ const Chatbot = ({ initialField, fields, onSubmit }) => {
     useEffect(() => {
         // Reset the chatbot with the initial field and message
         setCurrentField(initialField);
-        setMessages([{ text: fields[initialField].nextPrompt, sender: 'bot' }]);
+        setMessages([{ text: fields[initialField]?.nextPrompt, sender: 'bot' }]);
         setInputValue('');
         inputRef.current?.focus();
     }, [initialField, fields]);
@@ -26,10 +27,107 @@ const Chatbot = ({ initialField, fields, onSubmit }) => {
         setMessages((prev) => [...prev, { text, sender }]);
     };
 
+    const renderInputField = () => {
+        const field = fields[currentField];
+        if (!field) return null;
+
+        switch (field.type) {
+            case 'text':
+            case 'password':
+                return (
+                    <Input
+                        ref={inputRef}
+                        placeholder={field.placeholder}
+                        type={field.type}
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        onPressEnter={onInputSubmit}
+                        className="input-field"
+                    />
+                );
+            case 'textarea':
+                return (
+                    <TextArea
+                        ref={inputRef}
+                        placeholder={field.placeholder}
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        onPressEnter={onInputSubmit}
+                        className="input-field"
+                    />
+                );
+            case 'select':
+                return (
+                    <Select
+                        ref={inputRef}
+                        placeholder={field.placeholder}
+                        value={inputValue}
+                        onChange={(value) => setInputValue(value)}
+                        className="input-field"
+                        showSearch
+                        optionFilterProp="children"
+                    >
+                        {field.options && field.options.map((option) => (
+                            <Option key={option.value} value={option.value}>
+                                {option.label}
+                            </Option>
+                        ))}
+                    </Select>
+                );
+            case 'radio':
+                return (
+                    <Radio.Group
+                        ref={inputRef}
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                    >
+                        {field.options && field.options.map((option) => (
+                            <Radio key={option.value} value={option.value}>
+                                {option.label}
+                            </Radio>
+                        ))}
+                    </Radio.Group>
+                );
+            case 'switch':
+                return (
+                    <Switch
+                        ref={inputRef}
+                        checked={inputValue}
+                        onChange={(checked) => setInputValue(checked)}
+                    />
+                );
+            case 'slider':
+                return (
+                    <Slider
+                        ref={inputRef}
+                        min={0}
+                        max={1}
+                        step={0.1}
+                        value={inputValue}
+                        onChange={(value) => setInputValue(value)}
+                    />
+                );
+            case 'number':
+                return (
+                    <InputNumber
+                        ref={inputRef}
+                        placeholder={field.placeholder}
+                        value={inputValue}
+                        onChange={(value) => setInputValue(value)}
+                        className="input-field"
+                        min={field.min || 0}
+                        max={field.max || Infinity}
+                    />
+                );
+            default:
+                return null;
+        }
+    };
+
     const onInputSubmit = async () => {
         const field = fields[currentField];
 
-        if (inputValue.trim() !== '') {
+        if (inputValue !== '' || typeof inputValue === 'boolean') {
             const isValid = field.validate ? field.validate(inputValue) : true;
 
             if (!isValid) {
@@ -37,11 +135,11 @@ const Chatbot = ({ initialField, fields, onSubmit }) => {
                 return;
             }
 
-            addMessage(field.isSensitive ? '*'.repeat(inputValue.length) : inputValue, 'user');
+            addMessage(field.isSensitive ? '*'.repeat(inputValue.length) : String(inputValue), 'user');
 
             if (field.next) {
                 setCurrentField(field.next);
-                addMessage(fields[field.next].nextPrompt, 'bot');
+                addMessage(fields[field.next]?.nextPrompt, 'bot');
                 setInputValue('');
             } else {
                 setIsLoading(true);
@@ -50,7 +148,7 @@ const Chatbot = ({ initialField, fields, onSubmit }) => {
                     // Reset to the initial state after successful submission
                     setCurrentField(initialField);
                     setInputValue('');
-                    setMessages([{ text: fields[initialField].nextPrompt, sender: 'bot' }]);
+                    setMessages([{ text: fields[initialField]?.nextPrompt, sender: 'bot' }]);
                 }
                 setIsLoading(false);
             }
@@ -86,36 +184,7 @@ const Chatbot = ({ initialField, fields, onSubmit }) => {
             </div>
 
             <div className="input-area">
-                <Input
-                    ref={inputRef}
-                    placeholder={fields[currentField].placeholder}
-                    type={fields[currentField].type}
-                    prefix={fields[currentField].prefix}
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    onPressEnter={onInputSubmit}
-                    className="input-field"
-                    addonBefore={
-                        currentField === 'mobile' ? (
-                            <Select
-                                value={fields['mobile'].countryCode}
-                                style={{ width: 100 }}
-                                onChange={(value) => fields['mobile'].setCountryCode(value)}
-                                showSearch
-                                optionFilterProp="children"
-                            >
-                                {fields['mobile'].countryCodes.map((country) => (
-                                    <Option key={country.code} value={country.dial_code}>
-                                        <span role="img" aria-label={country.name}>
-                                            {country.emoji}
-                                        </span>
-                                        {country.dial_code}
-                                    </Option>
-                                ))}
-                            </Select>
-                        ) : null
-                    }
-                />
+                {renderInputField()}
                 <Button
                     type="primary"
                     icon={isLoading ? <LoadingOutlined /> : <SendOutlined />}
