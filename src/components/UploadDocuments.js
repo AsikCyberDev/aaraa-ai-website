@@ -1,11 +1,12 @@
-import { DeleteOutlined, EditOutlined, UploadOutlined } from '@ant-design/icons';
+import { DeleteOutlined, DownloadOutlined, EditOutlined, UploadOutlined } from '@ant-design/icons';
 import { useMutation, useQuery } from '@apollo/client';
-import { Button, Card, Input, List, Modal, Select, Upload, message } from 'antd';
+import { Button, Card, Input, Modal, Select, Space, Table, Upload, message } from 'antd';
 import React, { useEffect, useState } from 'react';
 import {
     CREATE_DOCUMENT,
     DELETE_DOCUMENT,
     GET_DOCUMENTS_BY_PROJECT,
+    GET_DOWNLOAD_URL,
     GET_PROJECTS,
     UPDATE_DOCUMENT
 } from '../graphql/queries';
@@ -21,12 +22,16 @@ const UploadDocuments = () => {
     const user = JSON.parse(localStorage.getItem('user'));
     const userId = user ? user.id : null;
 
+    const [getDownloadUrl] = useMutation(GET_DOWNLOAD_URL);
+
+
+
     const { data: projectsData, loading: projectsLoading, error: projectsError } = useQuery(GET_PROJECTS, {
         variables: { userId },
         skip: !userId,
     });
 
-    const { data: documentsData, refetch: refetchDocuments } = useQuery(GET_DOCUMENTS_BY_PROJECT, {
+    const { data: documentsData, refetch: refetchDocuments, loading: documentsLoading } = useQuery(GET_DOCUMENTS_BY_PROJECT, {
         variables: { projectId: selectedProject },
         skip: !selectedProject,
     });
@@ -108,53 +113,108 @@ const UploadDocuments = () => {
         }
     };
 
+    const handleDownload = async (document) => {
+        try {
+            const { data } = await getDownloadUrl({
+                variables: {
+                    input: {
+                        documentId: document.id,
+                        projectId: document.projectId,
+                    },
+                },
+            });
+
+            const { downloadUrl } = data.getDownloadUrl;
+
+            // Create a temporary anchor element to trigger the download
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.setAttribute('download', document.name);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+        } catch (error) {
+            message.error('Failed to download file');
+            console.error('Download error:', error);
+        }
+    };
+
+    const columns = [
+        {
+            title: 'Name',
+            dataIndex: 'name',
+            key: 'name',
+        },
+        {
+            title: 'Size',
+            dataIndex: 'size',
+            key: 'size',
+            render: (size) => `${(size / 1024).toFixed(2)} KB`,
+        },
+        {
+            title: 'Upload Date',
+            dataIndex: 'uploadDate',
+            key: 'uploadDate',
+            render: (date) => new Date(date).toLocaleString(),
+        },
+        {
+            title: 'Actions',
+            key: 'actions',
+            render: (_, record) => (
+                <Space>
+                    <Button icon={<DownloadOutlined />} onClick={() => handleDownload(record)}>
+                        Download
+                    </Button>
+                    <Button icon={<EditOutlined />} onClick={() => handleEdit(record)}>
+                        Edit
+                    </Button>
+                    <Button icon={<DeleteOutlined />} onClick={() => handleDelete(record)} danger>
+                        Delete
+                    </Button>
+                </Space>
+            ),
+        },
+    ];
+
     return (
         <Card title="Upload Documents">
-            <Select
-                style={{ width: 200, marginBottom: 16 }}
-                placeholder="Select a project"
-                onChange={setSelectedProject}
-                value={selectedProject}
-                loading={projectsLoading}
-                disabled={!userId || projectsLoading}
-            >
-                {projectsData?.projects.map((project) => (
-                    <Option key={project.id} value={project.id}>
-                        {project.name}
-                    </Option>
-                ))}
-            </Select>
+            <Space direction="vertical" style={{ width: '100%', marginBottom: 16 }}>
+                <Select
+                    style={{ width: 200 }}
+                    placeholder="Select a project"
+                    onChange={setSelectedProject}
+                    value={selectedProject}
+                    loading={projectsLoading}
+                    disabled={!userId || projectsLoading}
+                >
+                    {projectsData?.projects.map((project) => (
+                        <Option key={project.id} value={project.id}>
+                            {project.name}
+                        </Option>
+                    ))}
+                </Select>
 
-            <Upload
-                fileList={fileList}
-                onChange={({ fileList }) => setFileList(fileList)}
-                customRequest={({ file, onSuccess }) => {
-                    handleUpload(file);
-                    onSuccess();
-                }}
-                disabled={!selectedProject}
-            >
-                <Button icon={<UploadOutlined />} disabled={!selectedProject}>
-                    Select File
-                </Button>
-            </Upload>
+                <Upload
+                    fileList={fileList}
+                    onChange={({ fileList }) => setFileList(fileList)}
+                    customRequest={({ file, onSuccess }) => {
+                        handleUpload(file);
+                        onSuccess();
+                    }}
+                    disabled={!selectedProject}
+                >
+                    <Button icon={<UploadOutlined />} disabled={!selectedProject}>
+                        Select File
+                    </Button>
+                </Upload>
+            </Space>
 
-            <List
-                itemLayout="horizontal"
+            <Table
+                columns={columns}
                 dataSource={documentsData?.documentsByProject || []}
-                renderItem={(item) => (
-                    <List.Item
-                        actions={[
-                            <Button icon={<EditOutlined />} onClick={() => handleEdit(item)}>Edit</Button>,
-                            <Button icon={<DeleteOutlined />} onClick={() => handleDelete(item)} danger>Delete</Button>
-                        ]}
-                    >
-                        <List.Item.Meta
-                            title={item.name}
-                            description={`Size: ${item.size}, Uploaded: ${item.uploadDate}`}
-                        />
-                    </List.Item>
-                )}
+                rowKey="id"
+                loading={documentsLoading}
             />
 
             <Modal

@@ -404,3 +404,11 @@ export const DELETE_DOCUMENT = gql`
     deleteDocument(id: $id, projectId: $projectId)
   }
 `;
+
+export const GET_DOWNLOAD_URL = gql`
+  mutation GetDownloadUrl($input: GetDownloadUrlInput!) {
+    getDownloadUrl(input: $input) {
+      downloadUrl
+    }
+  }
+`;
