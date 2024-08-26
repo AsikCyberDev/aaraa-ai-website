@@ -1,4 +1,7 @@
 import {
+  FacebookFilled,
+  GithubOutlined,
+  GoogleOutlined,
   LoadingOutlined,
   LockOutlined,
   MailOutlined,
@@ -286,22 +289,22 @@ const ChatbotLogin = ({ onLogin }) => {
               <Button
                 className="social-button google"
                 onClick={() => console.log("Google login")}
+                icon={<GoogleOutlined />}
               >
-                <img src="google-icon.png" alt="Google icon" />
                 {socialButtonText} Google
               </Button>
               <Button
                 className="social-button facebook"
                 onClick={() => console.log("Facebook login")}
+                icon={<FacebookFilled />}
               >
-                <img src="facebook-icon.png" alt="Facebook icon" />
                 {socialButtonText} Facebook
               </Button>
               <Button
                 className="social-button github"
                 onClick={() => console.log("GitHub login")}
+                icon={<GithubOutlined />}
               >
-                <img src="github-icon.png" alt="GitHub icon" />
                 {socialButtonText} GitHub
               </Button>
             </div>
