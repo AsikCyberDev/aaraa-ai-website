@@ -1,31 +1,95 @@
 import {
-  BankOutlined,
-  BarChartOutlined, BellOutlined,
-  CheckCircleOutlined,
-  CopyOutlined, CrownOutlined, EditOutlined,
-  HistoryOutlined,
-  IdcardOutlined,
-  KeyOutlined, LockOutlined,
-  MailOutlined,
-  MessageOutlined,
-  PlusOutlined, RobotOutlined,
-  SaveOutlined,
-  ThunderboltOutlined,
-  UserOutlined
+  BankOutlined, BarChartOutlined, BellOutlined, CheckCircleOutlined,
+  CopyOutlined, CrownOutlined, EditOutlined, HistoryOutlined, IdcardOutlined,
+  KeyOutlined, LockOutlined, MailOutlined, MessageOutlined, PlusOutlined,
+  RobotOutlined, SaveOutlined, ThunderboltOutlined, UserOutlined
 } from '@ant-design/icons';
 import {
   Avatar, Button, Card, Col, Descriptions, Divider, Form, Input, List,
-  Modal, Progress, Row, Space,
-  Spin,
-  Statistic, Table, Tabs, Tag, Timeline,
+  Modal, Progress, Row, Space, Spin, Statistic, Table, Tabs, Tag, Timeline,
   Tooltip, Typography, message
 } from 'antd';
 import { motion } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import styled from 'styled-components';
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
+
+const StyledCard = styled(Card)`
+  background-color: var(--layout-background-color);
+  color: var(--text-color);
+  border-color: var(--border-color);
+`;
+
+const StyledTitle = styled(Title)`
+  color: var(--text-color);
+`;
+
+const StyledText = styled(Text)`
+  color: var(--text-color);
+`;
+
+const StyledDivider = styled(Divider)`
+  border-color: var(--border-color);
+`;
+
+const StyledButton = styled(Button)`
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: var(--header-text-color);
+
+  &:hover, &:focus {
+    background-color: var(--button-hover-background-color);
+    border-color: var(--button-hover-border-color);
+  }
+`;
+
+const ProfileContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+  background-color: var(--background-color);
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+`;
+
+const ProfileCard = styled(Card)`
+  width: 100%;
+  background-color: var(--component-background);
+  border-color: var(--border-color);
+  margin-bottom: 24px;
+`;
+
+const ProfileAvatar = styled(Avatar)`
+  background-color: var(--primary-color);
+  border: 4px solid var(--background-color);
+`;
+
+const StyledStatistic = styled(Statistic)`
+  .ant-statistic-title {
+    color: var(--text-color);
+  }
+  .ant-statistic-content {
+    color: var(--heading-text-color);
+  }
+`;
+
+const StyledTabs = styled(Tabs)`
+  width: 100%;
+  .ant-tabs-tab {
+    color: var(--text-color);
+  }
+  .ant-tabs-tab-active {
+    color: var(--primary-color);
+  }
+  .ant-tabs-ink-bar {
+    background-color: var(--primary-color);
+  }
+`;
 
 function Profile() {
   const [user, setUser] = useState(null);
@@ -110,8 +174,8 @@ function Profile() {
       key: 'name',
       render: (text) => (
         <Space>
-          <RobotOutlined style={{ color: '#1890ff' }} />
-          <Text strong>{text}</Text>
+          <RobotOutlined style={{ color: 'var(--primary-color)' }} />
+          <StyledText strong>{text}</StyledText>
         </Space>
       ),
     },
@@ -120,7 +184,7 @@ function Profile() {
       dataIndex: 'interactions',
       key: 'interactions',
       render: (value) => (
-        <Text>{value.toLocaleString()}</Text>
+        <StyledText>{value.toLocaleString()}</StyledText>
       ),
     },
     {
@@ -162,9 +226,9 @@ function Profile() {
 
   if (loading) {
     return (
-      <div className="profile-loading">
+      <ProfileContainer>
         <Spin size="large" tip="Loading your AI dashboard..." />
-      </div>
+      </ProfileContainer>
     );
   }
 
@@ -173,57 +237,44 @@ function Profile() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="profile-container"
     >
-      <Card
-        hoverable
-        className="profile-card"
-        cover={
-          <div className="profile-cover">
+      <ProfileContainer>
+        <ProfileCard>
+          <Row gutter={[24, 24]} align="middle">
+            <Col xs={24} sm={8} md={6} lg={4}>
+              <ProfileAvatar size={120} icon={<UserOutlined />} />
+            </Col>
+            <Col xs={24} sm={16} md={18} lg={20}>
+              <Space direction="vertical" size={0}>
+                <StyledTitle level={2}>{user.name}</StyledTitle>
+                <StyledText type="secondary">{user.role}</StyledText>
+                <StyledText>{user.email}</StyledText>
+                <StyledText>{user.company}</StyledText>
+              </Space>
+            </Col>
+          </Row>
+          <StyledDivider />
+          <Row gutter={16}>
+            <Col xs={24} sm={12} md={6}>
+              <StyledStatistic title="Chatbots Created" value={user.chatbotsCreated} prefix={<RobotOutlined style={{ color: 'var(--primary-color)' }} />} />
+            </Col>
+            <Col span={6}>
+              <StyledStatistic title="Total Interactions" value={user.totalInteractions} prefix={<MessageOutlined style={{ color: 'var(--secondary-color)' }} />} />
+            </Col>
+            <Col span={6}>
+              <StyledStatistic title="Active Chatbots" value={user.activeChatbots} prefix={<ThunderboltOutlined style={{ color: 'var(--warning-color, #faad14)' }} />} />
+            </Col>
+            <Col span={6}>
+              <StyledStatistic title="Last Login" value={user.lastLogin} prefix={<HistoryOutlined style={{ color: 'var(--info-color, #1890ff)' }} />} />
+            </Col>
+          </Row>
+          <StyledDivider />
+          <StyledButton type="primary" onClick={showModal} icon={<EditOutlined />}>
+            Edit Profile
+          </StyledButton>
+        </ProfileCard>
 
-            <div className="profile-cover-overlay">
-              <Title level={1} className="profile-title">
-                AI Chatbot Dashboard
-              </Title>
-            </div>
-          </div>
-        }
-      >
-        <Row gutter={[24, 24]} align="middle">
-          <Col xs={24} sm={8} md={6} lg={4}>
-            <Avatar size={120} icon={<UserOutlined />} style={{ backgroundColor: '#1890ff' }} />
-          </Col>
-          <Col xs={24} sm={16} md={18} lg={20}>
-            <Space direction="vertical" size={0}>
-              <Title level={2} style={{ marginBottom: 0 }}>{user.name}</Title>
-              <Text type="secondary">{user.role}</Text>
-              <Text>{user.email}</Text>
-              <Text>{user.company}</Text>
-            </Space>
-          </Col>
-        </Row>
-        <Divider />
-        <Row gutter={16}>
-          <Col span={6}>
-            <Statistic title="Chatbots Created" value={user.chatbotsCreated} prefix={<RobotOutlined style={{ color: '#1890ff' }} />} />
-          </Col>
-          <Col span={6}>
-            <Statistic title="Total Interactions" value={user.totalInteractions} prefix={<MessageOutlined style={{ color: '#52c41a' }} />} />
-          </Col>
-          <Col span={6}>
-            <Statistic title="Active Chatbots" value={user.activeChatbots} prefix={<ThunderboltOutlined style={{ color: '#faad14' }} />} />
-          </Col>
-          <Col span={6}>
-            <Statistic title="Last Login" value={user.lastLogin} prefix={<HistoryOutlined style={{ color: '#722ed1' }} />} />
-          </Col>
-        </Row>
-        <Divider />
-        <Button type="primary" onClick={showModal} icon={<EditOutlined />}>
-          Edit Profile
-        </Button>
-      </Card>
-
-      <Tabs activeKey={activeTab} onChange={setActiveTab} style={{ marginTop: 24 }}>
+        <StyledTabs activeKey={activeTab} onChange={setActiveTab}>
         <TabPane tab={<span><BarChartOutlined />Dashboard</span>} key="1">
           <Row gutter={16}>
             <Col span={16}>
@@ -232,8 +283,8 @@ function Profile() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                <Card>
-                  <Title level={4}>Chatbot Performance</Title>
+                <StyledCard>
+                  <StyledTitle level={4}>Chatbot Performance</StyledTitle>
                   <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={user.chatbotPerformance}>
                       <CartesianGrid strokeDasharray="3 3" />
@@ -246,7 +297,7 @@ function Profile() {
                       <Bar yAxisId="right" dataKey="satisfactionRate" fill="#82ca9d" name="Satisfaction Rate (%)" />
                     </BarChart>
                   </ResponsiveContainer>
-                </Card>
+                </StyledCard>
               </motion.div>
             </Col>
             <Col span={8}>
@@ -255,8 +306,8 @@ function Profile() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                <Card>
-                  <Title level={4}><CrownOutlined style={{ color: '#faad14' }} /> AI Subscription</Title>
+                <StyledCard>
+                  <StyledTitle level={4}><CrownOutlined style={{ color: 'var(--warning-color, #faad14)' }} /> AI Subscription</StyledTitle>
                   <Descriptions column={1}>
                     <Descriptions.Item label="Plan">
                       <Tag color="blue">{user.subscription.plan}</Tag>
@@ -266,18 +317,18 @@ function Profile() {
                       <Tag color={getStatusColor(user.subscription.status)}>{user.subscription.status}</Tag>
                     </Descriptions.Item>
                   </Descriptions>
-                  <Divider />
-                  <Title level={5}>AI Features</Title>
+                  <StyledDivider />
+                  <StyledTitle level={5}>AI Features</StyledTitle>
                   <List
                     size="small"
                     dataSource={user.subscription.features}
                     renderItem={item => (
                       <List.Item>
-                        <Text type="secondary"><CheckCircleOutlined style={{ color: '#52c41a', marginRight: 8 }} />{item}</Text>
+                        <StyledText type="secondary"><CheckCircleOutlined style={{ color: 'var(--success-color, #52c41a)', marginRight: 8 }} />{item}</StyledText>
                       </List.Item>
                     )}
                   />
-                </Card>
+                </StyledCard>
               </motion.div>
             </Col>
           </Row>
@@ -286,20 +337,20 @@ function Profile() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <Card style={{ marginTop: 16 }}>
-              <Title level={4}>AI Token Usage</Title>
+            <StyledCard style={{ marginTop: 16 }}>
+              <StyledTitle level={4}>AI Token Usage</StyledTitle>
               <Progress
                 percent={Math.round((user.tokenUsage.used / user.tokenUsage.limit) * 100)}
                 status="active"
                 strokeColor={{
-                  '0%': '#108ee9',
-                  '100%': '#87d068',
+                  '0%': 'var(--primary-color)',
+                  '100%': 'var(--secondary-color)',
                 }}
               />
               <Paragraph>
                 {user.tokenUsage.used.toLocaleString()} / {user.tokenUsage.limit.toLocaleString()} AI tokens used
               </Paragraph>
-            </Card>
+            </StyledCard>
           </motion.div>
         </TabPane>
         <TabPane tab={<span><RobotOutlined />AI Chatbots</span>} key="2">
@@ -308,9 +359,9 @@ function Profile() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <Card>
+            <StyledCard>
               <Table dataSource={user.chatbotPerformance} columns={chatbotColumns} rowKey="id" />
-            </Card>
+            </StyledCard>
           </motion.div>
         </TabPane>
         <TabPane tab={<span><KeyOutlined />API Keys</span>} key="3">
@@ -319,30 +370,30 @@ function Profile() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <Card>
+            <StyledCard>
               <List
                 itemLayout="horizontal"
                 dataSource={user.apiKeys}
                 renderItem={item => (
                   <List.Item actions={[
                     <Tooltip title="Copy API Key">
-                      <Button icon={<CopyOutlined />} onClick={() => copyApiKey(item.key)} />
+                      <StyledButton icon={<CopyOutlined />} onClick={() => copyApiKey(item.key)} />
                     </Tooltip>,
                     <Tooltip title="Revoke Key">
-                      <Button icon={<LockOutlined />} danger onClick={() => handleRevokeApiKey(item.id)} />
+                      <StyledButton icon={<LockOutlined />} danger onClick={() => handleRevokeApiKey(item.id)} />
                     </Tooltip>
                   ]}>
                     <List.Item.Meta
-                      title={<Text copyable={{ text: item.key }}>{item.key.substr(0, 8)}...{item.key.substr(-8)}</Text>}
+                      title={<StyledText copyable={{ text: item.key }}>{item.key.substr(0, 8)}...{item.key.substr(-8)}</StyledText>}
                       description={`Created: ${item.created} | Last Used: ${item.lastUsed}`}
                     />
                   </List.Item>
                 )}
               />
-              <Button type="primary" icon={<PlusOutlined />} style={{ marginTop: 16 }} onClick={handleGenerateNewApiKey}>
+              <StyledButton type="primary" icon={<PlusOutlined />} style={{ marginTop: 16 }} onClick={handleGenerateNewApiKey}>
                 Generate New AI API Key
-              </Button>
-            </Card>
+              </StyledButton>
+            </StyledCard>
           </motion.div>
         </TabPane>
         <TabPane tab={<span><BellOutlined />Recent AI Activity</span>} key="4">
@@ -351,25 +402,25 @@ function Profile() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <Card>
+            <StyledCard>
               <Timeline mode="alternate">
                 {user.recentActivity.map((activity, index) => (
                   <Timeline.Item
                     key={index}
-                    color={index === 0 ? 'green' : 'blue'}
+                    color={index === 0 ? 'var(--success-color, #52c41a)' : 'var(--primary-color)'}
                     dot={index === 0 ? <RobotOutlined style={{ fontSize: '16px' }} /> : null}
                   >
-                    <Card size="small" style={{ width: 300 }}>
-                      <p>{activity.action}</p>
-                      <Text type="secondary" style={{ fontSize: '12px' }}>{activity.date}</Text>
-                    </Card>
+                    <StyledCard size="small" style={{ width: 300 }}>
+                      <StyledText>{activity.action}</StyledText>
+                      <StyledText type="secondary" style={{ fontSize: '12px' }}>{activity.date}</StyledText>
+                    </StyledCard>
                   </Timeline.Item>
                 ))}
               </Timeline>
-            </Card>
+            </StyledCard>
           </motion.div>
         </TabPane>
-      </Tabs>
+      </StyledTabs>
 
       <Modal
         title={<span><EditOutlined /> Edit AI Profile</span>}
@@ -416,12 +467,13 @@ function Profile() {
             <Input prefix={<IdcardOutlined />} />
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit" icon={<SaveOutlined />}>
+            <StyledButton type="primary" htmlType="submit" icon={<SaveOutlined />}>
               Save Changes
-            </Button>
+            </StyledButton>
           </Form.Item>
         </Form>
       </Modal>
+      </ProfileContainer>
     </motion.div>
   );
 }

@@ -705,24 +705,56 @@ body {
 }
 
 /* Animation for logo */
+/* Logo start */
+
+.logo {
+  transition: all 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.1);
+}
+
 @keyframes pulse {
   0% {
     transform: scale(1);
-    opacity: 0.6;
+    opacity: 1;
   }
   50% {
-    transform: scale(1.1);
-    opacity: 1;
+    transform: scale(1.05);
+    opacity: 0.7;
   }
   100% {
     transform: scale(1);
-    opacity: 0.6;
+    opacity: 1;
   }
 }
 
-.logo {
+.logo-animation {
   animation: pulse 2s infinite;
 }
+
+@keyframes typing {
+  0% { width: 0 }
+  100% { width: 100% }
+}
+
+.logo-text {
+  overflow: hidden;
+  border-right: .15em solid #000;
+  white-space: nowrap;
+  letter-spacing: .15em;
+  animation:
+    typing 3.5s steps(40, end),
+    blink-caret .75s step-end infinite;
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: #000; }
+}
+
+/* Logo end */
 
 .profile-container {
   background: var(--background-color);
@@ -730,7 +762,7 @@ body {
 }
 
 .profile-card {
-  background-color: var(--component-background);
+    background: var(--background-color);
   color: var(--text-color);
 }
 
