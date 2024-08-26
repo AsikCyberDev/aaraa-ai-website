@@ -7,6 +7,7 @@ import Navbar from './components/Navbar';
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -23,18 +24,29 @@ const App = () => {
     setIsAuthenticated(false);
   };
 
+  const handleLoginToggle = (checked) => {
+    setIsLogin(checked);
+  };
+
   return (
     <Router>
       <Layout className="app-layout">
-        <Navbar onLogout={handleLogout} isAuthenticated={isAuthenticated} />
+        <Navbar
+          onLogout={handleLogout}
+          isAuthenticated={isAuthenticated}
+          onLoginToggle={handleLoginToggle}
+          isLogin={isLogin}
+        />
         <Layout.Content className="app-content">
           <Routes>
             <Route
               path="/login"
               element={
-                isAuthenticated
-                  ? <Navigate to="/dashboard" replace />
-                  : <ChatbotLogin onLogin={handleLogin} />
+                isAuthenticated ? (
+                  <Navigate to="/dashboard" replace />
+                ) : (
+                  <ChatbotLogin onLogin={handleLogin} isLogin={isLogin} />
+                )
               }
             />
             <Route

@@ -1,19 +1,3 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useMutation } from '@apollo/client';
-import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import Particles from 'react-tsparticles';
-import {
-  Button,
-  Card,
-  Col,
-  Input,
-  Row,
-  Select,
-  Switch,
-  Typography,
-  message
-} from 'antd';
 import {
   FacebookFilled,
   GithubOutlined,
@@ -25,17 +9,30 @@ import {
   SendOutlined,
   UserOutlined
 } from '@ant-design/icons';
+import { useMutation } from '@apollo/client';
+import {
+  Button,
+  Card,
+  Col,
+  Input,
+  Row,
+  Select,
+  Typography,
+  message
+} from 'antd';
+import { AnimatePresence, motion } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Particles from 'react-tsparticles';
 import { SIGNIN_MUTATION, SIGNUP_MUTATION } from '../graphql/queries';
-import ThemeToggle from './ThemeToggle';
 import { isAuthenticated } from './authUtils';
 import countryCodes from './countryCodes';
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
 
-const ChatbotLogin = ({ onLogin }) => {
+const ChatbotLogin = ({ onLogin, isLogin }) => {
   const navigate = useNavigate();
-  const [isLogin, setIsLogin] = useState(true);
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -75,6 +72,15 @@ const ChatbotLogin = ({ onLogin }) => {
   useEffect(() => {
     inputRef.current?.focus();
   }, [currentField]);
+
+  useEffect(() => {
+    setCurrentField(isLogin ? 'email' : 'name');
+    setMessages([]);
+    addMessage(
+      `Please enter your ${isLogin ? 'email' : 'name'} to ${isLogin ? 'log in' : 'sign up'}.`,
+      'bot'
+    );
+  }, [isLogin]);
 
   const addMessage = (text, sender) => {
     setMessages((prev) => [...prev, { text, sender }]);
@@ -231,7 +237,6 @@ const ChatbotLogin = ({ onLogin }) => {
       if (data && data.signUp) {
         addMessage('Signup successful! Please log in with your new account.', 'bot');
         message.success('Signup successful! Please log in.');
-        setIsLogin(true);
         setCurrentField('email');
         setLoginData({ email: signupData.email, password: '' });
         setInputValue(signupData.email);
@@ -262,23 +267,6 @@ const ChatbotLogin = ({ onLogin }) => {
       <Row gutter={24} justify="center" align="middle" style={{ minHeight: '100vh' }}>
         <Col xs={24} md={12} lg={10}>
           <Card className="login-card">
-            <div className="login-toggle">
-              <ThemeToggle />
-              <Switch
-                checkedChildren="Login"
-                unCheckedChildren="Signup"
-                checked={isLogin}
-                onChange={(checked) => {
-                  setIsLogin(checked);
-                  setCurrentField(checked ? 'email' : 'name');
-                  setMessages([]);
-                  addMessage(
-                    `Please enter your ${checked ? 'email' : 'name'} to ${checked ? 'log in' : 'sign up'}.`,
-                    'bot'
-                  );
-                }}
-              />
-            </div>
             <Title level={2} className="title-text">
               <motion.div
                 initial={{ opacity: 0, y: -20 }}

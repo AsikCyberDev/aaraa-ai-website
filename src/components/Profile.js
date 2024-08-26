@@ -162,7 +162,7 @@ function Profile() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <div className="profile-loading">
         <Spin size="large" tip="Loading your AI dashboard..." />
       </div>
     );
@@ -173,29 +173,16 @@ function Profile() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      style={{ background: '#f0f2f5', padding: '24px' }}
+      className="profile-container"
     >
       <Card
         hoverable
+        className="profile-card"
         cover={
-          <div style={{ height: '200px', overflow: 'hidden', position: 'relative' }}>
-            <img
-              alt="profile-background"
-              src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-1.2.1&auto=format&fit=crop&w=1352&q=80"
-              style={{ width: '100%', filter: 'blur(5px)' }}
-            />
-            <div style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              backgroundColor: 'rgba(0,0,0,0.4)',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-              <Title level={1} style={{ color: 'white', textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}>
+          <div className="profile-cover">
+
+            <div className="profile-cover-overlay">
+              <Title level={1} className="profile-title">
                 AI Chatbot Dashboard
               </Title>
             </div>
