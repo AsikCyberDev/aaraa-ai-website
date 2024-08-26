@@ -114,31 +114,41 @@ const UploadDocuments = () => {
     };
 
     const handleDownload = async (document) => {
+        if (typeof window === 'undefined') {
+            console.warn('Download function called in non-browser environment');
+            return;
+        }
+
         try {
             const { data } = await getDownloadUrl({
                 variables: {
                     input: {
                         documentId: document.id,
-                        projectId: document.projectId, // Make sure this is available in your document object
+                        projectId: document.projectId,
                     },
                 },
             });
 
             const { downloadUrl } = data.getDownloadUrl;
 
-            // Create a temporary anchor element to trigger the download
-            const link = document.createElement('a');
-            link.href = downloadUrl;
-            link.setAttribute('download', document.name);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            // Show a message that the download is starting
+            message.loading('Starting download...', 2.5);
+
+            // Open the download URL in a new tab
+            window.open(downloadUrl, '_blank');
+
+            // Show a success message after a short delay
+            setTimeout(() => {
+                message.success('Download completed. Check your downloads folder.', 4);
+            }, 3000); // Adjust this delay as needed
 
         } catch (error) {
             message.error('Failed to download file');
             console.error('Download error:', error);
         }
     };
+
+
 
     const columns = [
         {
