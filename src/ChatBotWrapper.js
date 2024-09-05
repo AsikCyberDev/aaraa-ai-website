@@ -28,6 +28,7 @@ const ChatBotWrapper = ({
             initial-temperature={initialTemperature}
             initial-max-tokens={initialMaxTokens}
             initial-top-p={initialTopP}
+            enable-settings={false}
         />
     );
 };
