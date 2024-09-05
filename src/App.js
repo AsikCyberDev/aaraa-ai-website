@@ -1,6 +1,7 @@
 import { Layout } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { Navigate, Route, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom';
+import ChatBotWrapper from './ChatBotWrapper';
 import ChatbotLogin from './components/ChatbotLogin';
 import Dashboard from './components/Dashboard';
 import Navbar from './components/Navbar';
@@ -34,6 +35,15 @@ const AppContent = ({ isAuthenticated, handleLogin, handleLogout, handleLoginTog
             element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" replace />}
           />
         </Routes>
+        <ChatBotWrapper
+          endpoint="https://github-aaraa-ai.vercel.app/api/chat"
+          heading="AI Assistant"
+          theme="dark"
+          initialModel="gpt-4o"
+          initialTemperature={0.7}
+          initialMaxTokens={2048}
+          initialTopP={0.9}
+        />
       </Layout.Content>
     </Layout>
   );

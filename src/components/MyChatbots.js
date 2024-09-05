@@ -245,6 +245,7 @@ const MyChatbots = () => {
             <Select onChange={(value) => handleInputChange('type', value)}>
               <Option value="SUPPORT">Support</Option>
               <Option value="SALES">Sales</Option>
+              <Option value="BEDROCK_AGENT">Agent</Option>
             </Select>
           </Form.Item>
           <Form.Item label="Status" name="status" rules={[{ required: true }]}>
