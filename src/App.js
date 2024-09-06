@@ -35,6 +35,7 @@ const AppContent = ({ isAuthenticated, handleLogin, handleLogout, handleLoginTog
             element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" replace />}
           />
         </Routes>
+        {/* ChatBotWrapper integration */}
         <ChatBotWrapper
           endpoint="https://github-aaraa-ai.vercel.app/api/chat"
           heading="AI Assistant"

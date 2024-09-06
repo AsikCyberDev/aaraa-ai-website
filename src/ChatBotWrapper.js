@@ -1,4 +1,4 @@
-import 'professional-ai-chatbot';
+import 'professional-ai-chatbot'; // Ensure you are importing the correct path for your custom element
 import React, { useEffect, useRef } from 'react';
 
 const ChatBotWrapper = ({
@@ -14,22 +14,33 @@ const ChatBotWrapper = ({
 
     useEffect(() => {
         if (chatbotRef.current) {
-            // You can add event listeners or interact with the web component here if needed
+            // You can add any event listeners or configurations here if needed
+            chatbotRef.current.addEventListener('chatbotInitialized', () => {
+                console.log('Chatbot is ready');
+            });
+
+            // Optionally, you could update properties dynamically:
+            // chatbotRef.current.heading = "New Heading";
         }
     }, []);
 
     return (
         <chat-bot
-            ref={chatbotRef}
-            endpoint={endpoint}
-            heading={heading}
-            theme={theme}
-            initial-model={initialModel}
-            initial-temperature={initialTemperature}
-            initial-max-tokens={initialMaxTokens}
-            initial-top-p={initialTopP}
-            enable-settings={false}
-        />
+        ref={chatbotRef}
+            endpoint="https://github-aaraa-ai.vercel.app/api/chat"
+            heading="AI Assistant"
+            theme="colorful"
+            initialModel="gpt-4o-mini"
+            initialTemperature="0.7"
+            initialMaxTokens="2048"
+            initialTopP="0.9"
+            enableSettings="true"
+            showToolbar="true"
+            fontSize="text-base"
+            initialPlaceholder="Type your first message here..."
+            subsequentPlaceholder="Continue chatting..."
+            buttonLabels='{"send": "Send", "close": "Close", "settings": "Settings"}'
+        ></chat-bot>
     );
 };
 
